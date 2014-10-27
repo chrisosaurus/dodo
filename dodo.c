@@ -528,7 +528,8 @@ EXIT:
 
 /***** main *****/
 void usage(void){
-    puts("dodo takes a single argument of <filename>\n"
+    puts("dodo - dumb in place file editor\n"
+         "dodo takes a single argument of <filename>\n"
          "and will read commands from stdin\n"
          "\n"
          "example:\n"
