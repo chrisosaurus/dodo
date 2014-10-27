@@ -321,8 +321,31 @@ int eval_expect(struct Program *p, struct Instruction *cur){
 }
 
 int eval_write(struct Program *p, struct Instruction *cur){
-    puts("eval_write unimplemented");
-    return 1; /* FIXME unimplemented */
+    /* string to write */
+    char *str;
+    /* len of str */
+    int len;
+    /* number of bytes written */
+    int nw;
+
+    str = cur->argument.str;
+    if( ! str ){
+        puts("Eval_write: no argument string found");
+        return 1;
+    }
+
+    len = strlen(str);
+
+    /* perform write */
+    nw = fwrite(str, 1, len, p->file);
+
+    /* check length */
+    if( nw != len ){
+        printf("Eval_write: expected to write '%d' bytes, actually wrote '%d'\n", len, nw);
+        return 1;
+    }
+
+    return 0;
 }
 
 /* execute provided Program
