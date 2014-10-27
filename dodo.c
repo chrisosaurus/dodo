@@ -47,6 +47,8 @@ struct Instruction {
      */
     enum Command command;
     union Argument argument;
+    /* next Instruction in linked list */
+    struct Instruction *next;
 };
 
 struct Program {
@@ -59,23 +61,255 @@ struct Program {
 
 
 /***** parsing functions *****/
+
+struct Instruction * parse_print(){
+    puts("parse_print unimplemented");
+    return 0; /* FIXME unimplemented */
+}
+
+struct Instruction * parse_byte(){
+    puts("parse_byte unimplemented");
+    return 0; /* FIXME unimplemented */
+}
+
+struct Instruction * parse_line(){
+    puts("parse_line unimplemented");
+    return 0; /* FIXME unimplemented */
+}
+
+struct Instruction * parse_expect(){
+    puts("parse_expect unimplemented");
+    return 0; /* FIXME unimplemented */
+}
+
+struct Instruction * parse_write(){
+    puts("parse_write unimplemented");
+    return 0; /* FIXME unimplemented */
+}
+
+struct Instruction * parse_quit(){
+    puts("parse_quit unimplemented");
+    return 0; /* FIXME unimplemented */
+}
+
+/* consume comment from source
+ * return 0 on success
+ * return 1 on error
+ */
+int parse_comment(char *source, int *index){
+    puts("parse_comment unimplemented");
+    return 1; /* FIXME unimplemented */
+}
+
 /* parse provided source into Program
  * return 0 on success
  * return 1 on failure
  */
-int parse(struct Program *p, FILE *source){
-    return 1; /* FIXME unimplemented */
+int parse(char *source, struct Program *program){
+    /* index into source */
+    int index = 0;
+    /* length of source */
+    int len;
+    /* result from call to parse_ functions */
+    struct Instruction *res;
+    /* place to store next parsed Instruction */
+    struct Instruction **store;
+
+    if( ! source ){
+        puts("Parse called with null source");
+        return 1;
+    }
+
+    len = strlen(source);
+    store = &(program->start);
+
+    while( index < len ){
+        switch( source[index] ){
+            case 'p':
+            case 'P':
+                res = parse_print(source, &index);
+                if( ! res ){
+                    puts("Parse: failed in call to parse_print");
+                    return 1;
+                }
+                *store = res;
+                store = &(res->next);
+                break;
+
+            case 'b':
+            case 'B':
+                res = parse_byte(source, &index);
+                if( ! res ){
+                    puts("Parse: failed in call to parse_byte");
+                    return 1;
+                }
+                *store = res;
+                store = &(res->next);
+                break;
+
+            case 'l':
+            case 'L':
+                res = parse_line(source, &index);
+                if( ! res ){
+                    puts("Parse: failed in call to parse_line");
+                    return 1;
+                }
+                *store = res;
+                store = &(res->next);
+                break;
+
+            case 'e':
+            case 'E':
+                res = parse_expect(source, &index);
+                if( ! res ){
+                    puts("Parse: failed in call to parse_expect");
+                    return 1;
+                }
+                *store = res;
+                store = &(res->next);
+                break;
+
+            case 'w':
+            case 'W':
+                res = parse_write(source, &index);
+                if( ! res ){
+                    puts("Parse: failed in call to parse_write");
+                    return 1;
+                }
+                *store = res;
+                store = &(res->next);
+                break;
+
+            case 'q':
+            case 'Q':
+                res = parse_quit(source, &index);
+                if( ! res ){
+                    puts("Parse: failed in call to parse_quit");
+                    return 1;
+                }
+                *store = res;
+                store = &(res->next);
+                break;
+
+            case '#':
+                if( parse_comment(source, &index) ){
+                    puts("Parsing comment failed");
+                    return 1;
+                }
+                break;
+
+            default:
+                printf("Parse: Invalid character encountered '%c'\n", source[index]);
+                return 1;
+                break;
+        }
+    }
+
+    /* null terminator for program */
+    *store = 0;
+
+    return 0;
 }
 
 
 
+
 /***** evaluation functions *****/
+
+int eval_print(struct Program *p, struct Instruction *cur){
+    puts("eval_print unimplemented");
+    return 1; /* FIXME unimplemented */
+}
+
+int eval_byte(struct Program *p, struct Instruction *cur){
+    puts("eval_byte unimplemented");
+    return 1; /* FIXME unimplemented */
+}
+
+int eval_line(struct Program *p, struct Instruction *cur){
+    puts("eval_line unimplemented");
+    return 1; /* FIXME unimplemented */
+}
+
+int eval_expect(struct Program *p, struct Instruction *cur){
+    puts("eval_expect unimplemented");
+    return 1; /* FIXME unimplemented */
+}
+
+int eval_write(struct Program *p, struct Instruction *cur){
+    puts("eval_write unimplemented");
+    return 1; /* FIXME unimplemented */
+}
+
 /* execute provided Program
  * return 0 on success
  * return 1 on failure
  */
 int execute(struct Program *p){
-    return 1; /* FIXME unimplemented */
+    /* cursor into program */
+    struct Instruction *cur;
+    /* return code from individual eval_ calls */
+    int ret = 0;
+
+    if( !p ){
+        puts("Execute called with null program");
+        return 1;
+    }
+
+    /* simple dispatch function */
+    for( cur = p->start; cur; cur = cur->next ){
+        switch( cur->command ){
+            case print:
+                ret = eval_print(p, cur);
+                if( ret ){
+                    return ret;
+                }
+                break;
+
+            case line:
+                ret = eval_line(p, cur);
+                if( ret ){
+                    return ret;
+                }
+                break;
+
+            case byte:
+                ret = eval_byte(p, cur);
+                if( ret ){
+                    return ret;
+                }
+                break;
+
+            case expect:
+                ret = eval_expect(p, cur);
+                if( ret ){
+                    return ret;
+                }
+                break;
+
+            case write:
+                ret = eval_write(p, cur);
+                if( ret ){
+                    return ret;
+                }
+                break;
+
+            case quit:
+                /* escape from loop */
+                goto EXIT;
+                break;
+
+            default:
+                puts("Invalid command type encountered in execute");
+                return 1;
+                break;
+        }
+    }
+
+    /* implicit (EOF) or explicit (Command quit) exit */
+EXIT:
+
+    return 0;
 }
 
 
@@ -105,6 +339,10 @@ void usage(void){
     );
 }
 
+char * slurp(FILE *file){
+    return 0; /* FIXME unimplemented */
+}
+
 int main(int argc, char **argv){
     if(    argc != 2
         || !strcmp("--help", argv[1])
@@ -115,9 +353,18 @@ int main(int argc, char **argv){
     }
 
     struct Program p;
+    p.start = 0;
+    p.file = 0;
+
+    // read program into source
+    char *source = slurp(stdin);
+    if( !source ){
+        puts("Reading program failed");
+        exit(EXIT_FAILURE);
+    }
 
     // parse program
-    if( parse(&p, stdin) ){
+    if( parse(source, &p) ){
         puts("Parsing program failed");
         exit(EXIT_FAILURE);
     }
