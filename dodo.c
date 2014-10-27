@@ -252,8 +252,17 @@ int eval_print(struct Program *p, struct Instruction *cur){
 }
 
 int eval_byte(struct Program *p, struct Instruction *cur){
-    puts("eval_byte unimplemented");
-    return 1; /* FIXME unimplemented */
+    /* byte number argument to seek to */
+    int byte;
+
+    byte = cur->argument.num;
+
+    if( fseek(p->file, byte, SEEK_SET) ){
+        puts("Eval_byte: fseek failed");
+        return 1;
+    }
+
+    return 0;
 }
 
 int eval_line(struct Program *p, struct Instruction *cur){
