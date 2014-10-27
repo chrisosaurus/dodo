@@ -217,8 +217,38 @@ int parse(char *source, struct Program *program){
 /***** evaluation functions *****/
 
 int eval_print(struct Program *p, struct Instruction *cur){
-    puts("eval_print unimplemented");
-    return 1; /* FIXME unimplemented */
+    /* number of bytes to read */
+    int num = cur->argument.num;
+    /* buffer to read into */
+    char *buf;
+    /* number of bytes read */
+    int nr = 0;
+
+    /* default to 100 bytes */
+    if( ! num ){
+        num = 100;
+    }
+
+    /* allocate buffer
+     * 1 + num to fit num bytes and null
+     */
+    buf = calloc(1 + num, 1);
+    if( ! buf ){
+        puts("Call to calloc failed in eval_print");
+        return 1;
+    }
+
+    /* read into buffer */
+    nr = fread(buf, 1, num, p->file);
+    /* make sure buffer is really a string */
+    buf[nr] = '\0';
+
+    /* print buffer, as instructed */
+    printf("'%s'\n", buf);
+
+    free(buf);
+
+    return 0;
 }
 
 int eval_byte(struct Program *p, struct Instruction *cur){
