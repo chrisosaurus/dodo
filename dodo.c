@@ -77,31 +77,79 @@ struct Instruction *new_instruction(enum Command command){
 /***** parsing functions *****/
 
 struct Instruction * parse_print(){
+    struct Instruction *i;
+
+    i = new_instruction(print);
+    if( ! i ){
+        puts("Parse_print: call to new_instruction failed");
+        return 0;
+    }
+
     puts("parse_print unimplemented");
     return 0; /* FIXME unimplemented */
 }
 
 struct Instruction * parse_byte(){
+    struct Instruction *i;
+
+    i = new_instruction(byte);
+    if( ! i ){
+        puts("Parse_byte: call to new_instruction failed");
+        return 0;
+    }
+
     puts("parse_byte unimplemented");
     return 0; /* FIXME unimplemented */
 }
 
 struct Instruction * parse_line(){
+    struct Instruction *i;
+
+    i = new_instruction(line);
+    if( ! i ){
+        puts("Parse_line: call to new_instruction failed");
+        return 0;
+    }
+
     puts("parse_line unimplemented");
     return 0; /* FIXME unimplemented */
 }
 
 struct Instruction * parse_expect(){
+    struct Instruction *i;
+
+    i = new_instruction(expect);
+    if( ! i ){
+        puts("Parse_expect: call to new_instruction failed");
+        return 0;
+    }
+
     puts("parse_expect unimplemented");
     return 0; /* FIXME unimplemented */
 }
 
 struct Instruction * parse_write(){
+    struct Instruction *i;
+
+    i = new_instruction(write);
+    if( ! i ){
+        puts("Parse_write: call to new_instruction failed");
+        return 0;
+    }
+
     puts("parse_write unimplemented");
     return 0; /* FIXME unimplemented */
 }
 
 struct Instruction * parse_quit(){
+    struct Instruction *i;
+
+    i = new_instruction(quit);
+    if( ! i ){
+        puts("Parse_quit: call to new_instruction failed");
+        return 0;
+    }
+
     puts("parse_quit unimplemented");
     return 0; /* FIXME unimplemented */
 }
