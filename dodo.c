@@ -159,8 +159,28 @@ struct Instruction * parse_quit(){
  * return 1 on error
  */
 int parse_comment(char *source, int *index){
-    puts("parse_comment unimplemented");
-    return 1; /* FIXME unimplemented */
+
+    if( source[*index] != '#' ){
+        printf("Parse_comment: expected '#', got '%c'\n", source[*index]);
+        return 1;
+    }
+
+    /* consume source until \n or \0 are found */
+    while( 1 ){
+        switch( source[*index] ){
+
+            case '\n':
+            case '\0':
+                break;
+
+            default:
+                ++(*index);
+                break;
+
+        }
+    }
+
+    return 0;
 }
 
 /* parse provided source into Program
