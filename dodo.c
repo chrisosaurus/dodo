@@ -58,6 +58,20 @@ struct Program {
     FILE *file;
 };
 
+struct Instruction *new_instruction(enum Command command){
+    struct Instruction *i;
+
+    i = calloc(1, sizeof(struct Instruction));
+    if( ! i ){
+        puts("new_instruction: call to calloc failed");
+        return 0;
+    }
+
+    i->command = command;
+
+    return i;
+}
+
 
 
 /***** parsing functions *****/
