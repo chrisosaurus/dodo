@@ -144,14 +144,24 @@ struct Instruction * parse_write(char *source, int *index){
 struct Instruction * parse_quit(char *source, int *index){
     struct Instruction *i;
 
+    switch( source[*index] ){
+        case 'q':
+        case 'Q':
+        case '\0': /* treat \0 as implicit quit */
+            break;
+
+        default:
+            printf("Parse_quit: unexpected character '%c'\n", source[*index]);
+            return 0;
+    }
+
     i = new_instruction(quit);
     if( ! i ){
         puts("Parse_quit: call to new_instruction failed");
         return 0;
     }
 
-    puts("parse_quit unimplemented");
-    return 0; /* FIXME unimplemented */
+    return i;
 }
 
 /* consume comment from source
@@ -171,6 +181,9 @@ int parse_comment(char *source, int *index){
 
             case '\n':
             case '\0':
+                /* end comment
+                 * leave character for parent to look at
+                 */
                 break;
 
             default:
@@ -264,6 +277,8 @@ int parse(char *source, struct Program *program){
 
             case 'q':
             case 'Q':
+            /* treat \0 as implicit quit */
+            case '\0':
                 res = parse_quit(source, &index);
                 if( ! res ){
                     puts("Parse: failed in call to parse_quit");
@@ -278,6 +293,14 @@ int parse(char *source, struct Program *program){
                     puts("Parsing comment failed");
                     return 1;
                 }
+                break;
+
+            /* skip over whitespace
+             * whitespace is insignificant EXCEPT for \n denoting end of comment
+             */
+            case ' ':
+            case '\t':
+            case '\n':
                 break;
 
             default:
