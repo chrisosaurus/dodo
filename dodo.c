@@ -76,7 +76,7 @@ struct Instruction *new_instruction(enum Command command){
 
 /***** parsing functions *****/
 
-struct Instruction * parse_print(){
+struct Instruction * parse_print(char *source, int *index){
     struct Instruction *i;
 
     i = new_instruction(print);
@@ -89,7 +89,7 @@ struct Instruction * parse_print(){
     return 0; /* FIXME unimplemented */
 }
 
-struct Instruction * parse_byte(){
+struct Instruction * parse_byte(char *source, int *index){
     struct Instruction *i;
 
     i = new_instruction(byte);
@@ -102,7 +102,7 @@ struct Instruction * parse_byte(){
     return 0; /* FIXME unimplemented */
 }
 
-struct Instruction * parse_line(){
+struct Instruction * parse_line(char *source, int *index){
     struct Instruction *i;
 
     i = new_instruction(line);
@@ -115,7 +115,7 @@ struct Instruction * parse_line(){
     return 0; /* FIXME unimplemented */
 }
 
-struct Instruction * parse_expect(){
+struct Instruction * parse_expect(char *source, int *index){
     struct Instruction *i;
 
     i = new_instruction(expect);
@@ -128,7 +128,7 @@ struct Instruction * parse_expect(){
     return 0; /* FIXME unimplemented */
 }
 
-struct Instruction * parse_write(){
+struct Instruction * parse_write(char *source, int *index){
     struct Instruction *i;
 
     i = new_instruction(write);
@@ -141,7 +141,7 @@ struct Instruction * parse_write(){
     return 0; /* FIXME unimplemented */
 }
 
-struct Instruction * parse_quit(){
+struct Instruction * parse_quit(char *source, int *index){
     struct Instruction *i;
 
     i = new_instruction(quit);
