@@ -271,8 +271,53 @@ int eval_line(struct Program *p, struct Instruction *cur){
 }
 
 int eval_expect(struct Program *p, struct Instruction *cur){
-    puts("eval_expect unimplemented");
-    return 1; /* FIXME unimplemented */
+    /* string to compare to */
+    char *str;
+    /* length of string */
+    int len;
+    /* buffer read into */
+    char *buf;
+    /* num bytes read */
+    int nr;
+
+    str = cur->argument.str;
+    if( ! str ){
+        puts("Eval_expect: no string argument found");
+        return 1;
+    }
+
+    len = strlen(str);
+
+    /* allocate buffer
+     *1 + len to fit len bytes + null terminator
+     */
+    buf = calloc(1 + len, 1);
+    if( ! buf ){
+        puts("Eval_expect: calloc call failed");
+        return 1;
+    }
+
+    /* perform read */
+    nr = fread(buf, 1, len, p->file);
+    buf[nr] = '\0';
+
+    /* compare number read to expected len */
+    if( nr != len ){
+        /* FIXME consider output when expect fails */
+        printf("Eval_expect: expected to read '%d' bytes, actually read '%d'\n", len, nr);
+        return 1;
+    }
+
+    /* compare read string to expected str */
+    if( strcmp(str, buf) ){
+        /* FIXME consider output when expect fails */
+        printf("Eval_expect: expected string '%s', got '%s'\n", str, buf);
+        return 1;
+    }
+
+    free(buf);
+
+    return 0;
 }
 
 int eval_write(struct Program *p, struct Instruction *cur){
