@@ -20,11 +20,7 @@ options:
 	@echo CC $<
 	@${CC} -g -c ${CFLAGS} $<
 
-${OBJ}: config.h config.mk
-
-config.h:
-	@echo creating $@ from config.def.h
-	@cp config.def.h $@
+${OBJ}: config.mk
 
 dodo: ${OBJ}
 	@echo CC -o $@
@@ -37,7 +33,7 @@ clean:
 dist: clean
 	@echo creating dist tarball
 	@mkdir -p dodo-${VERSION}
-	@cp -R LICENSE Makefile config.mk config.def.h \
+	@cp -R LICENSE Makefile config.mk \
 		README TODO dodo.1 codes.h ${SRC} dodo-${VERSION}
 	@tar -cf dodo-${VERSION}.tar dodo-${VERSION}
 	@gzip dodo-${VERSION}.tar
