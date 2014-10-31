@@ -56,6 +56,11 @@ struct Program {
     struct Instruction *start;
     /* file program is operating on */
     FILE *file;
+    /* program source read into a buffer */
+    char *source;
+    /* shared buffer (and length) used for reading into */
+    char *buf;
+    size_t buf_len;
 };
 
 struct Instruction *new_instruction(enum Command command){
@@ -72,6 +77,34 @@ struct Instruction *new_instruction(enum Command command){
     return i;
 }
 
+/***** internal helpers ******/
+/* return a buffer of at least size required_len
+ * returns 0 on error
+ */
+char *get_buffer(struct Program *p, size_t required_len){
+    if( !p )
+        return 0;
+
+    if( p->buf_len <= required_len )
+        return p->buf;
+
+    p->buf_len = required_len;
+    p->buf = realloc(p->buf, required_len);
+
+    if( ! p->buf_len ){
+        puts("get_buffer: failed to allocate buffer");
+        return 0;
+    }
+
+    return p->buf;
+}
+
+/* return a char* containing data from provided FILE*
+ * returns 0 on error
+ */
+char * slurp(FILE *file){
+    return 0; /* FIXME unimplemented */
+}
 
 
 /***** parsing functions *****/
@@ -550,10 +583,6 @@ void usage(void){
          "  q         # quit editing\n"
          "  # used for commenting out rest of line\n"
     );
-}
-
-char * slurp(FILE *file){
-    return 0; /* FIXME unimplemented */
 }
 
 int main(int argc, char **argv){
