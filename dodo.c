@@ -266,7 +266,7 @@ int parse_comment(char *source, size_t *index){
  * return 0 on success
  * return 1 on failure
  */
-int parse(char *source, struct Program *program){
+int parse(struct Program *program){
     /* index into source */
     size_t index = 0;
     /* length of source */
@@ -275,11 +275,15 @@ int parse(char *source, struct Program *program){
     struct Instruction *res;
     /* place to store next parsed Instruction */
     struct Instruction **store;
+    /* temporary pointer to program->source */
+    char *source;
 
-    if( ! source ){
-        puts("Parse called with null source");
+    if( ! program || ! program->source ){
+        puts("Parse called with null program or source");
         return 1;
     }
+
+    source = program->source;
 
     len = strlen(source);
     store = &(program->start);
@@ -625,14 +629,14 @@ int main(int argc, char **argv){
     p.buf_len = 0;
 
     // read program into source
-    char *source = slurp(stdin);
-    if( !source ){
+    p.source = slurp(stdin);
+    if( ! p.source ){
         puts("Reading program failed");
         exit(EXIT_FAILURE);
     }
 
     // parse program
-    if( parse(source, &p) ){
+    if( parse(&p) ){
         puts("Parsing program failed");
         exit(EXIT_FAILURE);
     }
@@ -655,7 +659,10 @@ int main(int argc, char **argv){
         free(p.buf);
     }
 
+    free(p.source);
+
     fclose(p.file);
+
     exit(EXIT_SUCCESS);
 }
 
