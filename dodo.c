@@ -356,6 +356,8 @@ struct Instruction * parse_quit(char *source, size_t *index){
     switch( source[*index] ){
         case 'q':
         case 'Q':
+            /* advance past letter */
+            ++(*index);
         case '\0': /* treat \0 as implicit quit */
             break;
 
@@ -363,6 +365,7 @@ struct Instruction * parse_quit(char *source, size_t *index){
             printf("Parse_quit: unexpected character '%c'\n", source[*index]);
             return 0;
     }
+
 
     i = new_instruction(quit);
     if( ! i ){
@@ -490,8 +493,7 @@ int parse(struct Program *program){
 
             case 'q':
             case 'Q':
-            /* treat \0 as implicit quit */
-            case '\0':
+            case '\0': /* treat \0 as implicit quit */
                 res = parse_quit(source, &index);
                 if( ! res ){
                     puts("Parse: failed in call to parse_quit");
@@ -499,6 +501,7 @@ int parse(struct Program *program){
                 }
                 *store = res;
                 store = &(res->next);
+                goto EXIT;
                 break;
 
             case '#':
@@ -524,6 +527,8 @@ int parse(struct Program *program){
                 break;
         }
     }
+
+EXIT:
 
     /* null terminator for program */
     *store = 0;
