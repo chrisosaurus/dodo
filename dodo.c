@@ -2,9 +2,6 @@
 #include <stdlib.h> /* exit */
 #include <string.h> /* strcmp, strncmp */
 
-#define QUIT_EXIT_CODE EXIT_SUCCESS
-#define EXPECT_EXIT_CODE EXIT_FAILURE
-
 /***** data structures and manipulation *****/
 
 enum Command {
