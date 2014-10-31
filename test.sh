@@ -5,7 +5,7 @@ TESTFILENAME="tmp_testing_file";
 
 echo -e "\nWriting file"
 cat <<EOF > $TESTFILENAME
-hello world
+hello world how are you
 EOF
 
 echo -e "\nRunning dodo"
@@ -19,7 +19,7 @@ EOF
 
 echo -e "\nComparing output"
 GOT=`cat $TESTFILENAME`
-EXPECTED="hello marge"
+EXPECTED="hello marge how are you"
 
 if [ ! "$GOT" = "$EXPECTED" ]; then
     echo -e "\nTest failed:"
