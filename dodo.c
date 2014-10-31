@@ -142,7 +142,7 @@ char * slurp(FILE *file){
 
 /***** parsing functions *****/
 
-struct Instruction * parse_print(char *source, int *index){
+struct Instruction * parse_print(char *source, size_t *index){
     struct Instruction *i;
 
     i = new_instruction(print);
@@ -155,7 +155,7 @@ struct Instruction * parse_print(char *source, int *index){
     return 0; /* FIXME unimplemented */
 }
 
-struct Instruction * parse_byte(char *source, int *index){
+struct Instruction * parse_byte(char *source, size_t *index){
     struct Instruction *i;
 
     i = new_instruction(byte);
@@ -168,7 +168,7 @@ struct Instruction * parse_byte(char *source, int *index){
     return 0; /* FIXME unimplemented */
 }
 
-struct Instruction * parse_line(char *source, int *index){
+struct Instruction * parse_line(char *source, size_t *index){
     struct Instruction *i;
 
     i = new_instruction(line);
@@ -181,7 +181,7 @@ struct Instruction * parse_line(char *source, int *index){
     return 0; /* FIXME unimplemented */
 }
 
-struct Instruction * parse_expect(char *source, int *index){
+struct Instruction * parse_expect(char *source, size_t *index){
     struct Instruction *i;
 
     i = new_instruction(expect);
@@ -194,7 +194,7 @@ struct Instruction * parse_expect(char *source, int *index){
     return 0; /* FIXME unimplemented */
 }
 
-struct Instruction * parse_write(char *source, int *index){
+struct Instruction * parse_write(char *source, size_t *index){
     struct Instruction *i;
 
     i = new_instruction(write);
@@ -207,7 +207,7 @@ struct Instruction * parse_write(char *source, int *index){
     return 0; /* FIXME unimplemented */
 }
 
-struct Instruction * parse_quit(char *source, int *index){
+struct Instruction * parse_quit(char *source, size_t *index){
     struct Instruction *i;
 
     switch( source[*index] ){
@@ -234,7 +234,7 @@ struct Instruction * parse_quit(char *source, int *index){
  * return 0 on success
  * return 1 on error
  */
-int parse_comment(char *source, int *index){
+int parse_comment(char *source, size_t *index){
 
     if( source[*index] != '#' ){
         printf("Parse_comment: expected '#', got '%c'\n", source[*index]);
@@ -268,9 +268,9 @@ int parse_comment(char *source, int *index){
  */
 int parse(char *source, struct Program *program){
     /* index into source */
-    int index = 0;
+    size_t index = 0;
     /* length of source */
-    int len;
+    size_t len;
     /* result from call to parse_ functions */
     struct Instruction *res;
     /* place to store next parsed Instruction */
@@ -393,7 +393,7 @@ int eval_print(struct Program *p, struct Instruction *cur){
     /* buffer to read into */
     char *buf;
     /* number of bytes read */
-    int nr = 0;
+    size_t nr = 0;
 
     /* default to 100 bytes */
     if( ! num ){
@@ -445,11 +445,11 @@ int eval_expect(struct Program *p, struct Instruction *cur){
     /* string to compare to */
     char *str;
     /* length of string */
-    int len;
+    size_t len;
     /* buffer read into */
     char *buf;
     /* num bytes read */
-    int nr;
+    size_t nr;
 
     str = cur->argument.str;
     if( ! str ){
@@ -475,7 +475,7 @@ int eval_expect(struct Program *p, struct Instruction *cur){
     /* compare number read to expected len */
     if( nr != len ){
         /* FIXME consider output when expect fails */
-        printf("Eval_expect: expected to read '%d' bytes, actually read '%d'\n", len, nr);
+        printf("Eval_expect: expected to read '%zu' bytes, actually read '%zu'\n", len, nr);
         return 1;
     }
 
@@ -495,9 +495,9 @@ int eval_write(struct Program *p, struct Instruction *cur){
     /* string to write */
     char *str;
     /* len of str */
-    int len;
+    size_t len;
     /* number of bytes written */
-    int nw;
+    size_t nw;
 
     str = cur->argument.str;
     if( ! str ){
@@ -512,7 +512,7 @@ int eval_write(struct Program *p, struct Instruction *cur){
 
     /* check length */
     if( nw != len ){
-        printf("Eval_write: expected to write '%d' bytes, actually wrote '%d'\n", len, nw);
+        printf("Eval_write: expected to write '%zu' bytes, actually wrote '%zu'\n", len, nw);
         return 1;
     }
 
