@@ -683,6 +683,12 @@ int eval_write(struct Program *p, struct Instruction *cur){
         return 1;
     }
 
+    /* flush file */
+    if( fflush(p->file) ){
+        puts("Eval_write: error flushing file");
+        return 1;
+    }
+
     return 0;
 }
 
