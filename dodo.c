@@ -286,6 +286,7 @@ EXIT:
 
 struct Instruction * parse_write(char *source, size_t *index){
     struct Instruction *i;
+    int len = 0;
 
     i = new_instruction(write);
     if( ! i ){
@@ -293,8 +294,60 @@ struct Instruction * parse_write(char *source, size_t *index){
         return 0;
     }
 
-    puts("parse_write unimplemented");
-    return 0; /* FIXME unimplemented */
+    /* w/string/ */
+    switch( source[*index] ){
+        case 'w':
+        case 'W':
+            ++(*index);
+            break;
+
+        default:
+            printf("Parse_write: unexpected character '%c', expected 'w'\n", source[*index]);
+            break;
+    }
+
+    if( '/' != source[*index] ){
+        printf("Parse_write: unexpected character '%c', expected beginning delimiter'/'\n", source[*index]);
+    }
+
+    /* skip past starting delimiter */
+    ++(*index);
+
+    /* save start of string */
+    i->argument.str = &(source[*index]);
+
+    /* count length of string */
+    /* FIXME may want to have length passed in
+     * 'just incase; buffer is not \0 terminated
+     */
+    for( len=0; ; ++(*index) ){
+        switch( source[*index] ){
+            /* end of buffer */
+            case '\0':
+                /* error, expected terminating / */
+                puts("Parse_write: unexpected end of source buffer, expected terminating delimiter'/'");
+                break;
+
+            /* terminating delimiter */
+            case '/':
+                /* skip past / */
+                ++(*index);
+                /* we are finished here */
+                goto EXIT;
+                break;
+
+            /* just another character in our string */
+            default:
+                ++len;
+                break;
+        }
+    }
+
+EXIT:
+
+    i->argument.num = len;
+
+    return i;
 }
 
 struct Instruction * parse_quit(char *source, size_t *index){
