@@ -33,17 +33,19 @@ enum Command {
     quit
 };
 
-union Argument {
+/* interpretation depends on Command */
+struct Argument {
+    /* either numeric argument OR length of string */
     int num;
     char *str;
 };
 
 struct Instruction {
     /* type of command determines dispatch to eval_ function
-     * which in turn determines which Argument member to use
+     * which in turn determines interpretation of argument
      */
     enum Command command;
-    union Argument argument;
+    struct Argument argument;
     /* next Instruction in linked list */
     struct Instruction *next;
 };
@@ -453,7 +455,7 @@ int eval_expect(struct Program *p, struct Instruction *cur){
         return 1;
     }
 
-    len = strlen(str);
+    len = cur->argument.num;
 
     /*1 + len to fit len bytes + null terminator */
     buf = get_buffer(p, 1+len);
@@ -497,7 +499,7 @@ int eval_write(struct Program *p, struct Instruction *cur){
         return 1;
     }
 
-    len = strlen(str);
+    len = cur->argument.num;
 
     /* perform write */
     nw = fwrite(str, 1, len, p->file);
