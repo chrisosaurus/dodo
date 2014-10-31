@@ -182,6 +182,7 @@ struct Instruction * parse_line(char *source, size_t *index){
 
 struct Instruction * parse_expect(char *source, size_t *index){
     struct Instruction *i;
+    int len = 0;
 
     i = new_instruction(expect);
     if( ! i ){
@@ -189,8 +190,60 @@ struct Instruction * parse_expect(char *source, size_t *index){
         return 0;
     }
 
-    puts("parse_expect unimplemented");
-    return 0; /* FIXME unimplemented */
+    /* e/string/ */
+    switch( source[*index] ){
+        case 'e':
+        case 'E':
+            ++(*index);
+            break;
+
+        default:
+            printf("Parse_expect: unexpected character '%c', expected 'e'\n", source[*index]);
+            break;
+    }
+
+    if( '/' != source[*index] ){
+        printf("Parse_expect: unexpected character '%c', expected beginning delimiter'/'\n", source[*index]);
+    }
+
+    /* skip past starting delimiter */
+    ++(*index);
+
+    /* save start of string */
+    i->argument.str = &(source[*index]);
+
+    /* count length of string */
+    /* FIXME may want to have length passed in
+     * 'just incase; buffer is not \0 terminated
+     */
+    for( len=0; ; ++(*index) ){
+        switch( source[*index] ){
+            /* end of buffer */
+            case '\0':
+                /* error, expected terminating / */
+                puts("Parse_expect: unexpected end of source buffer, expected terminating delimiter'/'");
+                break;
+
+            /* terminating delimiter */
+            case '/':
+                /* skip past / */
+                ++(*index);
+                /* we are finished here */
+                goto EXIT;
+                break;
+
+            /* just another character in our string */
+            default:
+                ++len;
+                break;
+        }
+    }
+
+EXIT:
+
+    i->argument.num = len;
+
+    return i;
 }
 
 struct Instruction * parse_write(char *source, size_t *index){
@@ -370,6 +423,8 @@ int parse(struct Program *program){
             case ' ':
             case '\t':
             case '\n':
+                /* actually skip over whitespace */
+                ++index;
                 break;
 
             default:
