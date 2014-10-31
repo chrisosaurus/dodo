@@ -81,16 +81,18 @@ struct Instruction *new_instruction(enum Command command){
  * returns 0 on error
  */
 char *get_buffer(struct Program *p, size_t required_len){
-    if( ! p )
+    if( ! p ){
         return 0;
+    }
 
-    if( p->buf_len <= required_len )
+    if( p->buf_len >= required_len ){
         return p->buf;
+    }
 
     p->buf_len = required_len;
     p->buf = realloc(p->buf, required_len);
 
-    if( ! p->buf_len ){
+    if( ! p->buf ){
         puts("get_buffer: failed to allocate buffer");
         return 0;
     }
