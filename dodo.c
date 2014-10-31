@@ -99,11 +99,44 @@ char *get_buffer(struct Program *p, size_t required_len){
     return p->buf;
 }
 
+#define BUF_INCR 1024
+
 /* return a char* containing data from provided FILE*
  * returns 0 on error
  */
 char * slurp(FILE *file){
-    return 0; /* FIXME unimplemented */
+    size_t size = BUF_INCR;
+    size_t offset = 0;
+    size_t nr = 0;
+    char *buf;
+
+    if( ! file ){
+        return 0;
+    }
+
+    buf = malloc(size);
+    if( ! buf ){
+        return 0;
+    }
+
+    while( BUF_INCR == (nr = fread(&(buf[offset]), 1, BUF_INCR, file)) ){
+        offset = size;
+        size += BUF_INCR;
+
+        buf = realloc(buf, size);
+
+        if( ! buf ){
+            return 0;
+        }
+    }
+
+    /* check for fread errors */
+    if( ferror(file) ){
+        puts("slurp: file read failed");
+        return 0;
+    }
+
+    return buf;
 }
 
 
