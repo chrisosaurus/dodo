@@ -163,8 +163,46 @@ struct Instruction * parse_byte(char *source, size_t *index){
         return 0;
     }
 
-    puts("parse_byte unimplemented");
-    return 0; /* FIXME unimplemented */
+    /* bn where n is positive integer */
+    switch( source[*index] ){
+        case 'b':
+        case 'B':
+            ++(*index);
+            break;
+        default:
+            printf("Unexpected character '%c', expected 'b'\n", source[*index]);
+            break;
+    }
+
+    /* read in number */
+    if( ! sscanf(&(source[*index]), "%d", &(i->argument.num)) ){
+        puts("Parse_byte: failed to read in specified number of bytes");
+        return 0;
+    }
+
+    /* advance past number */
+    for( ; ; ++(*index) ){
+        switch( source[*index] ){
+            case '0':
+            case '1':
+            case '2':
+            case '3':
+            case '4':
+            case '5':
+            case '6':
+            case '7':
+            case '8':
+            case '9':
+                break;
+
+            default:
+                goto EXIT;
+        }
+    }
+
+EXIT:
+
+    return i;
 }
 
 struct Instruction * parse_line(char *source, size_t *index){
