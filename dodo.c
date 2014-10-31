@@ -55,6 +55,8 @@ struct Program {
     struct Instruction *start;
     /* file program is operating on */
     FILE *file;
+    /* current offset into file */
+    int offset;
     /* program source read into a buffer */
     char *source;
     /* shared buffer (and length) used for reading into */
@@ -567,6 +569,12 @@ int eval_print(struct Program *p, struct Instruction *cur){
     /* make sure buffer is really a string */
     buf[nr] = '\0';
 
+    /* seek back to previous position */
+    if( fseek(p->file, p->offset, SEEK_SET) ){
+        puts("Eval_expect: fseek failed");
+        return 1;
+    }
+
     /* print buffer, as instructed */
     printf("'%s'\n", buf);
 
@@ -583,6 +591,9 @@ int eval_byte(struct Program *p, struct Instruction *cur){
         puts("Eval_byte: fseek failed");
         return 1;
     }
+
+    /* update file offset */
+    p->offset = byte;
 
     return 0;
 }
@@ -619,7 +630,14 @@ int eval_expect(struct Program *p, struct Instruction *cur){
 
     /* perform read */
     nr = fread(buf, 1, len, p->file);
+    /* make sure buffer is really a string */
     buf[nr] = '\0';
+
+    /* seek back to previous position */
+    if( fseek(p->file, p->offset, SEEK_SET) ){
+        puts("Eval_expect: fseek failed");
+        return 1;
+    }
 
     /* compare number read to expected len */
     if( nr != len ){
@@ -781,6 +799,7 @@ int main(int argc, char **argv){
     p.file = 0;
     p.buf = 0;
     p.buf_len = 0;
+    p.offset = 0;
 
     // read program into source
     p.source = slurp(stdin);
