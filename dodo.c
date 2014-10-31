@@ -82,7 +82,7 @@ struct Instruction *new_instruction(enum Command command){
  * returns 0 on error
  */
 char *get_buffer(struct Program *p, size_t required_len){
-    if( !p )
+    if( ! p )
         return 0;
 
     if( p->buf_len <= required_len )
@@ -390,7 +390,6 @@ int parse(char *source, struct Program *program){
 int eval_print(struct Program *p, struct Instruction *cur){
     /* number of bytes to read */
     int num = cur->argument.num;
-    /* buffer to read into */
     char *buf;
     /* number of bytes read */
     size_t nr = 0;
@@ -400,12 +399,10 @@ int eval_print(struct Program *p, struct Instruction *cur){
         num = 100;
     }
 
-    /* allocate buffer
-     * 1 + num to fit num bytes and null
-     */
-    buf = calloc(1 + num, 1);
+    /* 1 + num to fit num bytes and null */
+    buf = get_buffer(p, 1+num);
     if( ! buf ){
-        puts("Call to calloc failed in eval_print");
+        puts("eval_prin: call to get_buffer failed");
         return 1;
     }
 
@@ -416,8 +413,6 @@ int eval_print(struct Program *p, struct Instruction *cur){
 
     /* print buffer, as instructed */
     printf("'%s'\n", buf);
-
-    free(buf);
 
     return 0;
 }
@@ -459,12 +454,10 @@ int eval_expect(struct Program *p, struct Instruction *cur){
 
     len = strlen(str);
 
-    /* allocate buffer
-     *1 + len to fit len bytes + null terminator
-     */
-    buf = calloc(1 + len, 1);
+    /*1 + len to fit len bytes + null terminator */
+    buf = get_buffer(p, 1+len);
     if( ! buf ){
-        puts("Eval_expect: calloc call failed");
+        puts("Eval_expect: call to get_buffer failed");
         return 1;
     }
 
@@ -485,8 +478,6 @@ int eval_expect(struct Program *p, struct Instruction *cur){
         printf("Eval_expect: expected string '%s', got '%s'\n", str, buf);
         return 1;
     }
-
-    free(buf);
 
     return 0;
 }
@@ -630,6 +621,8 @@ int main(int argc, char **argv){
     struct Program p;
     p.start = 0;
     p.file = 0;
+    p.buf = 0;
+    p.buf_len = 0;
 
     // read program into source
     char *source = slurp(stdin);
@@ -656,6 +649,10 @@ int main(int argc, char **argv){
         puts("Program execution failed");
         fclose(p.file);
         exit(EXIT_FAILURE);
+    }
+
+    if( p.buf ){
+        free(p.buf);
     }
 
     fclose(p.file);
