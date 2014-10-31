@@ -629,7 +629,9 @@ int eval_expect(struct Program *p, struct Instruction *cur){
     }
 
     /* compare read string to expected str */
-    if( strcmp(str, buf) ){
+    if( strncmp(str, buf, len) ){
+        /* add terminating \0 to allow printf-ing */
+        str[len] = '\0';
         /* FIXME consider output when expect fails */
         printf("Eval_expect: expected string '%s', got '%s'\n", str, buf);
         return 1;
