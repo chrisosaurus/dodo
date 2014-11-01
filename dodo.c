@@ -145,6 +145,62 @@ char * slurp(FILE *file){
 
 /***** parsing functions *****/
 
+/* parsing helper method for parsing a string argument to a command
+ * used for expect e/string/
+ * and for write w/string/
+ *
+ * returns instruction on success
+ * 0 on error
+ */
+struct Instruction * parse_string(struct Instruction *i, char *source, size_t *index){
+    int len = 0;
+
+    if( '/' != source[*index] ){
+        printf("Parse_string: unexpected character '%c', expected beginning delimiter'/'\n", source[*index]);
+        return 0;
+    }
+
+    /* skip past starting delimiter */
+    ++(*index);
+
+    /* save start of string */
+    i->argument.str = &(source[*index]);
+
+    /* count length of string */
+    /* FIXME may want to have buffer length passed in
+     * 'just incase; buffer is not \0 terminated
+     */
+    for( len=0; ; ++(*index) ){
+        switch( source[*index] ){
+            /* end of buffer */
+            case '\0':
+                /* error, expected terminating / */
+                puts("Parse_string: unexpected end of source buffer, expected terminating delimiter'/'");
+                return 0;
+                break;
+
+            /* terminating delimiter */
+            case '/':
+                /* skip past / */
+                ++(*index);
+                /* we are finished here */
+                goto EXIT;
+                break;
+
+            /* just another character in our string */
+            default:
+                ++len;
+                break;
+        }
+    }
+
+EXIT:
+
+    i->argument.num = len;
+
+    return i;
+}
+
 struct Instruction * parse_print(char *source, size_t *index){
     struct Instruction *i;
 
@@ -225,7 +281,6 @@ struct Instruction * parse_line(char *source, size_t *index){
 
 struct Instruction * parse_expect(char *source, size_t *index){
     struct Instruction *i;
-    int len = 0;
 
     i = new_instruction(expect);
     if( ! i ){
@@ -246,55 +301,11 @@ struct Instruction * parse_expect(char *source, size_t *index){
             break;
     }
 
-    if( '/' != source[*index] ){
-        printf("Parse_expect: unexpected character '%c', expected beginning delimiter'/'\n", source[*index]);
-        return 0;
-    }
-
-    /* skip past starting delimiter */
-    ++(*index);
-
-    /* save start of string */
-    i->argument.str = &(source[*index]);
-
-    /* count length of string */
-    /* FIXME may want to have buffer length passed in
-     * 'just incase; buffer is not \0 terminated
-     */
-    for( len=0; ; ++(*index) ){
-        switch( source[*index] ){
-            /* end of buffer */
-            case '\0':
-                /* error, expected terminating / */
-                puts("Parse_expect: unexpected end of source buffer, expected terminating delimiter'/'");
-                return 0;
-                break;
-
-            /* terminating delimiter */
-            case '/':
-                /* skip past / */
-                ++(*index);
-                /* we are finished here */
-                goto EXIT;
-                break;
-
-            /* just another character in our string */
-            default:
-                ++len;
-                break;
-        }
-    }
-
-EXIT:
-
-    i->argument.num = len;
-
-    return i;
+    return parse_string(i, source, index);
 }
 
 struct Instruction * parse_write(char *source, size_t *index){
     struct Instruction *i;
-    int len = 0;
 
     i = new_instruction(write);
     if( ! i ){
@@ -315,50 +326,7 @@ struct Instruction * parse_write(char *source, size_t *index){
             break;
     }
 
-    if( '/' != source[*index] ){
-        printf("Parse_write: unexpected character '%c', expected beginning delimiter'/'\n", source[*index]);
-        return 0;
-    }
-
-    /* skip past starting delimiter */
-    ++(*index);
-
-    /* save start of string */
-    i->argument.str = &(source[*index]);
-
-    /* count length of string */
-    /* FIXME may want to have buffer length passed in
-     * 'just incase; buffer is not \0 terminated
-     */
-    for( len=0; ; ++(*index) ){
-        switch( source[*index] ){
-            /* end of buffer */
-            case '\0':
-                /* error, expected terminating / */
-                puts("Parse_write: unexpected end of source buffer, expected terminating delimiter'/'");
-                return 0;
-                break;
-
-            /* terminating delimiter */
-            case '/':
-                /* skip past / */
-                ++(*index);
-                /* we are finished here */
-                goto EXIT;
-                break;
-
-            /* just another character in our string */
-            default:
-                ++len;
-                break;
-        }
-    }
-
-EXIT:
-
-    i->argument.num = len;
-
-    return i;
+    return parse_string(i, source, index);
 }
 
 struct Instruction * parse_quit(char *source, size_t *index){
