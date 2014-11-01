@@ -4,7 +4,7 @@ dodo - scriptable in place file editor
 
 WARNING
 -------
-dodo is a VERY early on work in progress, not yet recommended for actual use.
+dodo is a VERY early on work in progress, **not yet recommended for actual use**.
 
 
 Description
@@ -62,43 +62,44 @@ here is the above example with comments included:
 each of the commands in explained below in more detail.
 
 
-dodo currently supports the following commands:
+dodo currently supports the following commands and syntax:
 
 
-expect:
+**expect:**
 
     e/string/
 
 check for 'string' at current cursor position, exit with error if not found
 
 
-byte:
+**byte:**
 
     bnumber
 
 move cursor to absolute byte 'number' within file
 
 
-write:
+**write:**
 
     w/string/
 
-write string to current cursor position, this will overwrite any characters in the way
+write 'string' to current cursor position, this will overwrite any characters in the way
 
 
-quit:
+**quit:**
 
     q
 
 exit dodo
 
 
+**comments:**
 dodo also supports comments
 
     # this is a comment and spans until \n
 
 
-whitespace:
+**whitespace:**
 
     in dodo whitespace is non-significant except in the case of terminating a comment
 
