@@ -258,7 +258,7 @@ struct Instruction * parse_expect(char *source, size_t *index){
     i->argument.str = &(source[*index]);
 
     /* count length of string */
-    /* FIXME may want to have length passed in
+    /* FIXME may want to have buffer length passed in
      * 'just incase; buffer is not \0 terminated
      */
     for( len=0; ; ++(*index) ){
@@ -327,7 +327,7 @@ struct Instruction * parse_write(char *source, size_t *index){
     i->argument.str = &(source[*index]);
 
     /* count length of string */
-    /* FIXME may want to have length passed in
+    /* FIXME may want to have buffer length passed in
      * 'just incase; buffer is not \0 terminated
      */
     for( len=0; ; ++(*index) ){
