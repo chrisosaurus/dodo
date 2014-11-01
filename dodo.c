@@ -201,6 +201,7 @@ struct Instruction * parse_byte(char *source, size_t *index){
 
             default:
                 goto EXIT;
+                break;
         }
     }
 
