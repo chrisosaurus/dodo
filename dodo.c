@@ -201,6 +201,45 @@ EXIT:
     return i;
 }
 
+/* parsing helper method for parsing a number argument to a command
+ * used for byte bnumber
+ *
+ * returns instruction on success
+ * 0 on error
+ */
+struct Instruction * parse_number(struct Instruction *i, char *source, size_t *index){
+    /* read in number */
+    if( ! sscanf(&(source[*index]), "%d", &(i->argument.num)) ){
+        puts("Parse_number: failed to read in number");
+        return 0;
+    }
+
+    /* advance past number */
+    for( ; ; ++(*index) ){
+        switch( source[*index] ){
+            case '0':
+            case '1':
+            case '2':
+            case '3':
+            case '4':
+            case '5':
+            case '6':
+            case '7':
+            case '8':
+            case '9':
+                break;
+
+            default:
+                goto EXIT;
+                break;
+        }
+    }
+
+EXIT:
+
+    return i;
+}
+
 struct Instruction * parse_print(char *source, size_t *index){
     struct Instruction *i;
 
@@ -234,36 +273,7 @@ struct Instruction * parse_byte(char *source, size_t *index){
             break;
     }
 
-    /* read in number */
-    if( ! sscanf(&(source[*index]), "%d", &(i->argument.num)) ){
-        puts("Parse_byte: failed to read in specified number of bytes");
-        return 0;
-    }
-
-    /* advance past number */
-    for( ; ; ++(*index) ){
-        switch( source[*index] ){
-            case '0':
-            case '1':
-            case '2':
-            case '3':
-            case '4':
-            case '5':
-            case '6':
-            case '7':
-            case '8':
-            case '9':
-                break;
-
-            default:
-                goto EXIT;
-                break;
-        }
-    }
-
-EXIT:
-
-    return i;
+    return parse_number(i, source, index);
 }
 
 struct Instruction * parse_line(char *source, size_t *index){
