@@ -47,9 +47,22 @@ example dodo usage:
     q
     EOF
 
-
 Explanation
 -----------
+here is the above example with comments included:
+
+    echo -e "\nRunning dodo"
+    ./dodo $TESTFILENAME <<EOF
+    e/hello/   # expect string 'hello'
+    b6         # goto byte 6 in file
+    e/world/   # expect string 'world'
+    w/marge/   # write string 'marge' (writes over 'world')
+    q          # quit
+    EOF
+
+each of the commands in explained below in more detail.
+
+
 dodo currently supports the following commands:
 
 
@@ -79,6 +92,11 @@ quit:
     q
 
 exit dodo
+
+
+dodo also supports comments
+
+    # this is a comment and spans until \n
 
 
 

@@ -10,11 +10,11 @@ EOF
 
 echo -e "\nRunning dodo"
 ./dodo $TESTFILENAME <<EOF
-e/hello/
-b6
-e/world/
-w/marge/
-q
+e/hello/   # expect string 'hello'
+b6         # goto byte 6 in file
+e/world/   # expect string 'world'
+w/marge/   # write string 'marge' (writes over 'world')
+q          # quit
 EOF
 
 echo -e "\nComparing output"

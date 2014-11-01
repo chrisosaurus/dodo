@@ -419,6 +419,7 @@ int parse_comment(char *source, size_t *index){
                 /* end comment
                  * leave character for parent to look at
                  */
+                goto EXIT;
                 break;
 
             default:
@@ -427,6 +428,8 @@ int parse_comment(char *source, size_t *index){
 
         }
     }
+
+EXIT:
 
     return 0;
 }
