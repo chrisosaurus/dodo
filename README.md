@@ -40,24 +40,23 @@ note that in dodo all changes are flushed immediately; there are no concepts of 
 example dodo usage:
 
     ./dodo $TESTFILENAME <<EOF
-    e/hello/
-    b6
-    e/world/
-    w/marge/
-    q
+        e/hello/
+        b6
+        e/world/
+        w/marge/
+        q
     EOF
 
 Explanation
 -----------
 here is the above example with comments included:
 
-    echo -e "\nRunning dodo"
     ./dodo $TESTFILENAME <<EOF
-    e/hello/   # expect string 'hello'
-    b6         # goto byte 6 in file
-    e/world/   # expect string 'world'
-    w/marge/   # write string 'marge' (writes over 'world')
-    q          # quit
+        e/hello/   # expect string 'hello'
+        b6         # goto byte 6 in file
+        e/world/   # expect string 'world'
+        w/marge/   # write string 'marge' (writes over 'world')
+        q          # quit
     EOF
 
 each of the commands in explained below in more detail.
@@ -97,6 +96,11 @@ exit dodo
 dodo also supports comments
 
     # this is a comment and spans until \n
+
+
+whitespace:
+
+    in dodo whitespace is non-significant except in the case of terminating a comment
 
 
 
