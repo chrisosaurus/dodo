@@ -308,11 +308,13 @@ struct Instruction * parse_write(char *source, size_t *index){
 
         default:
             printf("Parse_write: unexpected character '%c', expected 'w'\n", source[*index]);
+            return 0;
             break;
     }
 
     if( '/' != source[*index] ){
         printf("Parse_write: unexpected character '%c', expected beginning delimiter'/'\n", source[*index]);
+        return 0;
     }
 
     /* skip past starting delimiter */
@@ -331,6 +333,7 @@ struct Instruction * parse_write(char *source, size_t *index){
             case '\0':
                 /* error, expected terminating / */
                 puts("Parse_write: unexpected end of source buffer, expected terminating delimiter'/'");
+                return 0;
                 break;
 
             /* terminating delimiter */
