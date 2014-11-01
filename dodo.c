@@ -155,6 +155,23 @@ char * slurp(FILE *file){
 struct Instruction * parse_string(struct Instruction *i, char *source, size_t *index){
     int len = 0;
 
+    /* check arguments */
+    if( ! i ){
+        puts("Parse_string: null instruction");
+        return 0;
+    }
+
+    if( ! source ){
+        puts("Parse_string: null source");
+        return 0;
+    }
+
+    if( ! index ){
+        puts("Parse_string: null index");
+        return 0;
+    }
+
+
     if( '/' != source[*index] ){
         printf("Parse_string: unexpected character '%c', expected beginning delimiter'/'\n", source[*index]);
         return 0;
@@ -208,6 +225,23 @@ EXIT:
  * 0 on error
  */
 struct Instruction * parse_number(struct Instruction *i, char *source, size_t *index){
+    /* check arguments */
+    if( ! i ){
+        puts("Parse_number: null instruction");
+        return 0;
+    }
+
+    if( ! source ){
+        puts("Parse_number: null source");
+        return 0;
+    }
+
+    if( ! index ){
+        puts("Parse_number: null index");
+        return 0;
+    }
+
+
     /* read in number */
     if( ! sscanf(&(source[*index]), "%d", &(i->argument.num)) ){
         puts("Parse_number: failed to read in number");
