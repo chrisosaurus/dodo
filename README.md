@@ -39,7 +39,7 @@ note that in dodo all changes are flushed immediately; there are no concepts of 
 
 example dodo usage:
 
-    ./dodo $TESTFILENAME <<EOF
+    ./dodo filename <<EOF
         e/hello/
         b6
         e/world/
@@ -51,7 +51,7 @@ Explanation
 -----------
 here is the above example with comments included:
 
-    ./dodo $TESTFILENAME <<EOF
+    ./dodo filename <<EOF
         e/hello/   # expect string 'hello'
         b6         # goto byte 6 in file
         e/world/   # expect string 'world'
