@@ -40,18 +40,6 @@ note that in dodo all changes are flushed immediately; there are no concepts of 
 example dodo usage:
 
     ./dodo filename <<EOF
-        e/hello/
-        b6
-        e/world/
-        w/marge/
-        q
-    EOF
-
-Explanation
------------
-here is the above example with comments included:
-
-    ./dodo filename <<EOF
         e/hello/   # expect string 'hello'
         b6         # goto byte 6 in file
         e/world/   # expect string 'world'
@@ -59,8 +47,11 @@ here is the above example with comments included:
         q          # quit
     EOF
 
-each of the commands in explained below in more detail.
+each of the commands is explained below in more detail.
 
+
+Commands
+--------
 
 dodo currently supports the following commands and syntax:
 
@@ -69,7 +60,9 @@ dodo currently supports the following commands and syntax:
 
     e/string/
 
-check for 'string' at current cursor position, exit with error if not found
+check for 'string' at current cursor position, exit with error if not found.
+
+expect does not move the cursor.
 
 
 **byte:**
@@ -85,12 +78,14 @@ move cursor to absolute byte 'number' within file
 
 write 'string' to current cursor position, this will overwrite any characters in the way
 
+write moves the cursor by the number of bytes written
+
 
 **quit:**
 
     q
 
-exit dodo
+exit dodo, quit is not actually needed as EOF will trigger an implicit quit.
 
 
 **comments:**
