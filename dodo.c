@@ -9,28 +9,28 @@ enum Command {
      * prints $num bytes
      * $num defaults to 100 if not supplied
      */
-    print,
+    PRINT,
     /* takes num
      * goto line in file
      */
-    line,
+    LINE,
     /* takes num
      * goto byte in file
      */
-    byte,
+    BYTE,
     /* takes string
      * compares string to current file location
      * exits with code <EXPECT_EXIT_CODE> if string doesn't match
      */
-    expect,
+    EXPECT,
     /* takes string
      * writes string to current location in file
      * leaves the cursor positioned after the write
      */
-    write,
+    WRITE,
     /* exists with code <QUIT_EXIT_CODE>
      */
-    quit
+    QUIT
 };
 
 /* interpretation depends on Command */
@@ -277,7 +277,7 @@ EXIT:
 struct Instruction * parse_print(char *source, size_t *index){
     struct Instruction *i;
 
-    i = new_instruction(print);
+    i = new_instruction(PRINT);
     if( ! i ){
         puts("Parse_print: call to new_instruction failed");
         return 0;
@@ -290,7 +290,7 @@ struct Instruction * parse_print(char *source, size_t *index){
 struct Instruction * parse_byte(char *source, size_t *index){
     struct Instruction *i;
 
-    i = new_instruction(byte);
+    i = new_instruction(BYTE);
     if( ! i ){
         puts("Parse_byte: call to new_instruction failed");
         return 0;
@@ -313,7 +313,7 @@ struct Instruction * parse_byte(char *source, size_t *index){
 struct Instruction * parse_line(char *source, size_t *index){
     struct Instruction *i;
 
-    i = new_instruction(line);
+    i = new_instruction(LINE);
     if( ! i ){
         puts("Parse_line: call to new_instruction failed");
         return 0;
@@ -326,7 +326,7 @@ struct Instruction * parse_line(char *source, size_t *index){
 struct Instruction * parse_expect(char *source, size_t *index){
     struct Instruction *i;
 
-    i = new_instruction(expect);
+    i = new_instruction(EXPECT);
     if( ! i ){
         puts("Parse_expect: call to new_instruction failed");
         return 0;
@@ -351,7 +351,7 @@ struct Instruction * parse_expect(char *source, size_t *index){
 struct Instruction * parse_write(char *source, size_t *index){
     struct Instruction *i;
 
-    i = new_instruction(write);
+    i = new_instruction(WRITE);
     if( ! i ){
         puts("Parse_write: call to new_instruction failed");
         return 0;
@@ -390,7 +390,7 @@ struct Instruction * parse_quit(char *source, size_t *index){
     }
 
 
-    i = new_instruction(quit);
+    i = new_instruction(QUIT);
     if( ! i ){
         puts("Parse_quit: call to new_instruction failed");
         return 0;
@@ -732,42 +732,42 @@ int execute(struct Program *p){
     /* simple dispatch function */
     for( cur = p->start; cur; cur = cur->next ){
         switch( cur->command ){
-            case print:
+            case PRINT:
                 ret = eval_print(p, cur);
                 if( ret ){
                     return ret;
                 }
                 break;
 
-            case line:
+            case LINE:
                 ret = eval_line(p, cur);
                 if( ret ){
                     return ret;
                 }
                 break;
 
-            case byte:
+            case BYTE:
                 ret = eval_byte(p, cur);
                 if( ret ){
                     return ret;
                 }
                 break;
 
-            case expect:
+            case EXPECT:
                 ret = eval_expect(p, cur);
                 if( ret ){
                     return ret;
                 }
                 break;
 
-            case write:
+            case WRITE:
                 ret = eval_write(p, cur);
                 if( ret ){
                     return ret;
                 }
                 break;
 
-            case quit:
+            case QUIT:
                 /* escape from loop */
                 goto EXIT;
                 break;
