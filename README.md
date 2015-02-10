@@ -40,6 +40,8 @@ note that in dodo all changes are flushed immediately; there are no concepts of 
 example dodo usage:
 
     ./dodo filename <<EOF
+        p          # print 100 bytes
+        p5         # print 5 bytes ('hello')
         e/hello/   # expect string 'hello'
         b6         # goto byte 6 in file
         e/world/   # expect string 'world'
@@ -55,6 +57,12 @@ Commands
 
 dodo currently supports the following commands and syntax:
 
+**print**
+
+    p
+    pnumber
+
+print specified number of bytes, if number is not specified will default to 100
 
 **expect:**
 

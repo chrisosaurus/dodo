@@ -1,6 +1,7 @@
 #include <stdio.h> /* fopen, fseek, fread, fwrite, FILE */
 #include <stdlib.h> /* exit */
 #include <string.h> /* strcmp, strncmp */
+#include <ctype.h> /* isdigit */
 
 /***** data structures and manipulation *****/
 
@@ -283,8 +284,30 @@ struct Instruction * parse_print(char *source, size_t *index){
         return 0;
     }
 
-    puts("parse_print unimplemented");
-    return 0; /* FIXME unimplemented */
+    /* w/string/ */
+    switch( source[*index] ){
+        case 'p':
+        case 'P':
+            ++(*index);
+            break;
+
+        default:
+            printf("Parse_print: unexpected character '%c', expected 'w'\n", source[*index]);
+            return 0;
+            break;
+    }
+
+    /* print has 2 different forms
+     *  p127
+     *  p
+     * if next character is a number then we are in the first form
+     */
+    if( isdigit(source[*index]) ){
+        return parse_number(i, source, index);
+    }
+
+    /* otherwise there is no number and we are in second form (default to 100 bytes) */
+    return i;
 }
 
 struct Instruction * parse_byte(char *source, size_t *index){
@@ -852,8 +875,8 @@ void usage(void){
          "supported commands:\n"
          "  bn        # goto byte <n> of file\n"
          "  ln        # goto line <n> of file -- UNIMPLEMENTED\n"
-         "  p         # print 100 bytes       -- UNIMPLEMENTED\n"
-         "  pn        # print n bytes         -- UNIMPLEMENTED\n"
+         "  p         # print 100 bytes\n"
+         "  pn        # print n bytes\n"
          "  e/str/    # compare <str> to current position, exit if not equal\n"
          "  w/str/    # write <str> to current position\n"
          "  q         # quit editing\n"

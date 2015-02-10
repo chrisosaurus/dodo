@@ -10,6 +10,8 @@ EOF
 
 echo -e "\nRunning dodo"
 ./dodo $TESTFILENAME <<EOF
+    p          # print 100 bytes
+    p5         # print 5 bytes ('hello')
     e/hello/   # expect string 'hello'
     b6         # goto byte 6 in file
     e/world/   # expect string 'world'
