@@ -96,7 +96,7 @@ dodo also supports comments
 
 **whitespace:**
 
-    in dodo whitespace is non-significant except in the case of terminating a comment
+    in dodo whitespace is non-significant except in the case of a newline ('\n') terminating a comment
 
 
 
