@@ -20,7 +20,7 @@ enum Command {
     BYTE,
     /* takes string
      * compares string to current file location
-     * exits with code <EXPECT_EXIT_CODE> if string doesn't match
+     * exits with code EXIT_FAILURE if string doesn't match
      */
     EXPECT,
     /* takes string
@@ -28,7 +28,7 @@ enum Command {
      * leaves the cursor positioned after the write
      */
     WRITE,
-    /* exists with code <QUIT_EXIT_CODE>
+    /* exists with code EXIT_SUCCESS
      */
     QUIT
 };
