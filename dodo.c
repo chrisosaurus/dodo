@@ -567,6 +567,19 @@ EXIT:
 
 /***** evaluation functions *****/
 
+/* eval PRINT command
+ * print specified number of bytes
+ * defaults to 100 bytes if number isn't specified
+ *
+ *  p
+ *  p127
+ *
+ * uses cur->argument.num
+ *
+ * returns 0 on success
+ * returns 1 on failure
+ * failure will cause program to halt
+ */
 int eval_print(struct Program *p, struct Instruction *cur){
     /* number of bytes to read */
     int num = cur->argument.num;
@@ -603,6 +616,17 @@ int eval_print(struct Program *p, struct Instruction *cur){
     return 0;
 }
 
+/* eval BYTE command
+ * move spcified number of bytes 'forward' through text
+ *
+ *  b427
+ *
+ * uses cur->argument.num
+ *
+ * returns 0 on success
+ * returns 1 on failure
+ * failure will cause program to halt
+ */
 int eval_byte(struct Program *p, struct Instruction *cur){
     /* byte number argument to seek to */
     int byte;
@@ -625,6 +649,18 @@ int eval_line(struct Program *p, struct Instruction *cur){
     return 1; /* FIXME unimplemented */
 }
 
+/* eval EXPECT command
+ * check current location matches specified string
+ * throws error if string does not match
+ *
+ *  e/hello/
+ *
+ * uses cur->argument.str
+ *
+ * returns 0 on success
+ * returns 1 on failure
+ * failure will cause program to halt
+ */
 int eval_expect(struct Program *p, struct Instruction *cur){
     /* string to compare to */
     char *str;
@@ -680,6 +716,18 @@ int eval_expect(struct Program *p, struct Instruction *cur){
     return 0;
 }
 
+/* eval WRITE command
+ * write specified string
+ * will overwrite existing text in place
+ *
+ *  w/world/
+ *
+ * uses cur->argument.str
+ *
+ * returns 0 on success
+ * returns 1 on failure
+ * failure will cause program to halt
+ */
 int eval_write(struct Program *p, struct Instruction *cur){
     /* string to write */
     char *str;
@@ -779,7 +827,7 @@ int execute(struct Program *p){
         }
     }
 
-    /* implicit (EOF) or explicit (Command quit) exit */
+    /* implicit (EOF) or explicit (Command quit) => exit */
 EXIT:
 
     return 0;
