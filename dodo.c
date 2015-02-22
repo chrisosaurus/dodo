@@ -29,7 +29,7 @@ enum Command {
      * leaves the cursor positioned after the write
      */
     WRITE,
-    /* exists with code EXIT_SUCCESS
+    /* exits with code EXIT_SUCCESS
      */
     QUIT
 };
