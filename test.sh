@@ -5,7 +5,7 @@ TESTFILENAME="tmp_testing_file";
 
 echo -e "\nWriting file"
 cat <<EOF > $TESTFILENAME
-hello world how are you
+hello world how are you mutter mutter sl/ash
 EOF
 
 echo -e "\nRunning dodo"
@@ -16,12 +16,15 @@ echo -e "\nRunning dodo"
     b6         # goto byte 6 in file
     e/world/   # expect string 'world'
     w/marge/   # write string 'marge' (writes over 'world')
+    b38
+    e/sl\/ash/ # expect string 'sl/ash'
+    w/slashy/  # write string 'sl/ash' with 'slashy'
     q          # quit
 EOF
 
 echo -e "\nComparing output"
 GOT=`cat $TESTFILENAME`
-EXPECTED="hello marge how are you"
+EXPECTED="hello marge how are you mutter mutter slashy"
 
 if [ ! "$GOT" = "$EXPECTED" ]; then
     echo -e "\nTest failed:"
