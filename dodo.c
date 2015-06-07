@@ -197,6 +197,16 @@ struct Instruction * parse_string(struct Instruction *i, char *source, size_t *i
                 return 0;
                 break;
 
+            case '\\':
+                /* A bit yucky: Rework the string to delete the escape character '\'
+                   Note the use of memmove as the source and destination overlap */
+                memmove(source+*index,
+                        source+*index+1,
+                        strlen(source+*index));
+                (*index)++;
+                len+=2;
+                break;
+
             /* terminating delimiter */
             case '/':
                 /* skip past / */
