@@ -895,6 +895,7 @@ void usage(void){
 }
 
 int main(int argc, char **argv){
+    int exit_code = EXIT_SUCCESS;
     struct Program p = {0};
 
     if(    argc != 2
@@ -909,37 +910,46 @@ int main(int argc, char **argv){
     p.source = slurp(stdin);
     if( ! p.source ){
         puts("Reading program failed");
-        exit(EXIT_FAILURE);
+        exit_code = EXIT_FAILURE;
+        goto EXIT;
     }
 
     // parse program
     if( parse(&p) ){
         puts("Parsing program failed");
-        exit(EXIT_FAILURE);
+        exit_code = EXIT_FAILURE;
+        goto EXIT;
     }
 
     /* open file */
     p.file = fopen(argv[1], "r+b");
     if( ! p.file ){
         printf("Failed to open specified file '%s'\n", argv[1]);
-        exit(EXIT_FAILURE);
+        exit_code = EXIT_FAILURE;
+        goto EXIT;
     }
 
     // execute program
     if( execute(&p) ){
         puts("Program execution failed");
-        fclose(p.file);
-        exit(EXIT_FAILURE);
+        exit_code = EXIT_FAILURE;
+        goto EXIT;
     }
+
+EXIT:
 
     if( p.buf ){
         free(p.buf);
     }
 
-    free(p.source);
+    if( p.file ){
+        fclose(p.file);
+    }
 
-    fclose(p.file);
+    if( p.source ){
+        free(p.source);
+    }
 
-    exit(EXIT_SUCCESS);
+    exit(exit_code);
 }
 
