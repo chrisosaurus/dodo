@@ -895,6 +895,8 @@ void usage(void){
 }
 
 int main(int argc, char **argv){
+    struct Program p = {0};
+
     if(    argc != 2
         || !strcmp("--help", argv[1])
         || !strcmp("-h", argv[1])
@@ -902,13 +904,6 @@ int main(int argc, char **argv){
         usage();
         exit(EXIT_FAILURE);
     }
-
-    struct Program p;
-    p.start = 0;
-    p.file = 0;
-    p.buf = 0;
-    p.buf_len = 0;
-    p.offset = 0;
 
     // read program into source
     p.source = slurp(stdin);
