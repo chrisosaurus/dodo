@@ -1,15 +1,26 @@
 #!/usr/bin/env bash
-set -e
 
-TESTFILENAME="tmp_testing_file";
+# check for valgrind
+which valgrind
+if [[ 0 -ne $? ]]; then
+    echo "No valgrind found"
+    exit 1
+fi
+
+
+set -eu
+
+TESTFILENAME="tmp_testing_file"
+VALGRINDOPTS="--track-origins=yes --error-exitcode=1 --leak-check=full --show-reachable=yes"
 
 echo -e "\nWriting file"
 cat <<EOF > $TESTFILENAME
 hello world how are you mutter mutter sl/ash
 EOF
 
+
 echo -e "\nRunning dodo"
-./dodo $TESTFILENAME <<EOF
+valgrind $VALGRINDOPTS ./dodo $TESTFILENAME <<EOF
     p          # print 100 bytes
     p5         # print 5 bytes ('hello')
     e/hello/   # expect string 'hello'
@@ -22,6 +33,7 @@ echo -e "\nRunning dodo"
     q          # quit
 EOF
 
+
 echo -e "\nComparing output"
 GOT=`cat $TESTFILENAME`
 EXPECTED="hello marge how are you mutter mutter slashy"
@@ -33,7 +45,7 @@ if [ ! "$GOT" = "$EXPECTED" ]; then
     # do not clean up on failure to allow inspection of file
     #rm -f $TESTFILENAME
     echo "Leaving tmp file laying around as '$TESTFILENAME'"
-    exit 1;
+    exit 1
 fi
 
 
