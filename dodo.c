@@ -202,7 +202,7 @@ struct Instruction * parse_string(struct Instruction *i, char *source, size_t *i
                    Note the use of memmove as the source and destination overlap */
                 memmove(source+*index,
                         source+*index+1,
-                        strlen(i->argument.str) - ((i->argument.str - source) - *index) - 1);
+                        strlen(source+*index));
                 (*index)++;
                 len+=2;
                 break;
