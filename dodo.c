@@ -66,7 +66,7 @@ struct Program {
 };
 
 struct Instruction *new_instruction(enum Command command){
-    struct Instruction *i;
+    struct Instruction *i = 0;
 
     i = calloc(1, sizeof(struct Instruction));
     if( ! i ){
@@ -112,7 +112,7 @@ char * slurp(FILE *file){
     size_t size = BUF_INCR;
     size_t offset = 0;
     size_t nr = 0;
-    char *buf;
+    char *buf = 0;
 
     if( ! file ){
         return 0;
@@ -286,7 +286,7 @@ EXIT:
 }
 
 struct Instruction * parse_print(char *source, size_t *index){
-    struct Instruction *i;
+    struct Instruction *i = 0;
 
     i = new_instruction(PRINT);
     if( ! i ){
@@ -321,7 +321,7 @@ struct Instruction * parse_print(char *source, size_t *index){
 }
 
 struct Instruction * parse_byte(char *source, size_t *index){
-    struct Instruction *i;
+    struct Instruction *i = 0;
 
     i = new_instruction(BYTE);
     if( ! i ){
@@ -344,7 +344,7 @@ struct Instruction * parse_byte(char *source, size_t *index){
 }
 
 struct Instruction * parse_line(char *source, size_t *index){
-    struct Instruction *i;
+    struct Instruction *i = 0;
 
     i = new_instruction(LINE);
     if( ! i ){
@@ -357,7 +357,7 @@ struct Instruction * parse_line(char *source, size_t *index){
 }
 
 struct Instruction * parse_expect(char *source, size_t *index){
-    struct Instruction *i;
+    struct Instruction *i = 0;
 
     i = new_instruction(EXPECT);
     if( ! i ){
@@ -382,7 +382,7 @@ struct Instruction * parse_expect(char *source, size_t *index){
 }
 
 struct Instruction * parse_write(char *source, size_t *index){
-    struct Instruction *i;
+    struct Instruction *i = 0;
 
     i = new_instruction(WRITE);
     if( ! i ){
@@ -407,7 +407,7 @@ struct Instruction * parse_write(char *source, size_t *index){
 }
 
 struct Instruction * parse_quit(char *source, size_t *index){
-    struct Instruction *i;
+    struct Instruction *i = 0;
 
     switch( source[*index] ){
         case 'q':
@@ -475,13 +475,13 @@ int parse(struct Program *program){
     /* index into source */
     size_t index = 0;
     /* length of source */
-    size_t len;
+    size_t len = 0;
     /* result from call to parse_ functions */
-    struct Instruction *res;
+    struct Instruction *res = 0;
     /* place to store next parsed Instruction */
-    struct Instruction **store;
+    struct Instruction **store = 0;
     /* temporary pointer to program->source */
-    char *source;
+    char *source = 0;
 
     if( ! program || ! program->source ){
         puts("Parse called with null program or source");
@@ -616,7 +616,7 @@ EXIT:
 int eval_print(struct Program *p, struct Instruction *cur){
     /* number of bytes to read */
     int num = cur->argument.num;
-    char *buf;
+    char *buf = 0;
     /* number of bytes read */
     size_t nr = 0;
 
@@ -662,7 +662,7 @@ int eval_print(struct Program *p, struct Instruction *cur){
  */
 int eval_byte(struct Program *p, struct Instruction *cur){
     /* byte number argument to seek to */
-    int byte;
+    int byte = 0;
 
     byte = cur->argument.num;
 
@@ -696,13 +696,13 @@ int eval_line(struct Program *p, struct Instruction *cur){
  */
 int eval_expect(struct Program *p, struct Instruction *cur){
     /* string to compare to */
-    char *str;
+    char *str = 0;
     /* length of string */
-    size_t len;
+    size_t len = 0;
     /* buffer read into */
-    char *buf;
+    char *buf = 0;
     /* num bytes read */
-    size_t nr;
+    size_t nr = 0;
 
     str = cur->argument.str;
     if( ! str ){
@@ -763,11 +763,11 @@ int eval_expect(struct Program *p, struct Instruction *cur){
  */
 int eval_write(struct Program *p, struct Instruction *cur){
     /* string to write */
-    char *str;
+    char *str = 0;
     /* len of str */
-    size_t len;
+    size_t len = 0;
     /* number of bytes written */
-    size_t nw;
+    size_t nw = 0;
 
     str = cur->argument.str;
     if( ! str ){
@@ -801,7 +801,7 @@ int eval_write(struct Program *p, struct Instruction *cur){
  */
 int execute(struct Program *p){
     /* cursor into program */
-    struct Instruction *cur;
+    struct Instruction *cur = 0;
     /* return code from individual eval_ calls */
     int ret = 0;
 
