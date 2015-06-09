@@ -118,7 +118,7 @@ char * slurp(FILE *file){
         return 0;
     }
 
-    buf = malloc(size);
+    buf = calloc(size, 1);
     if( ! buf ){
         return 0;
     }
