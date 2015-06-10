@@ -199,7 +199,8 @@ struct Instruction * parse_string(struct Instruction *i, char *source, size_t *i
 
             case '\\':
                 /* A bit yucky: Rework the string to delete the escape character '\'
-                   Note the use of memmove as the source and destination overlap */
+                 * Note the use of memmove as the source and destination overlap
+                 */
                 memmove(source+*index,
                         source+*index+1,
                         strlen(source+*index));
@@ -923,7 +924,7 @@ int main(int argc, char **argv){
         goto EXIT;
     }
 
-    /* open file */
+    // open file
     p.file = fopen(argv[1], "r+b");
     if( ! p.file ){
         printf("Failed to open specified file '%s'\n", argv[1]);
@@ -940,8 +941,9 @@ int main(int argc, char **argv){
 
 EXIT:
 
-	/* free the elements of the linked list of instructions allocated while
-	 * parsing, if parsing was indeed done  */
+    /* free the elements of the linked list of instructions allocated while
+     * parsing, if parsing was indeed done
+     */
     if ( p.start ){
         now = p.start;
         do
