@@ -150,6 +150,9 @@ char * slurp(FILE *file){
  * used for expect e/string/
  * and for write w/string/
  *
+ * source must be a c-string meaning that is is an array of characters
+ * terminated by the null-terminator ('\0')
+ *
  * returns instruction on success
  * 0 on error
  */
@@ -185,9 +188,6 @@ struct Instruction * parse_string(struct Instruction *i, char *source, size_t *i
     i->argument.str = &(source[*index]);
 
     /* count length of string */
-    /* FIXME may want to have buffer length passed in
-     * 'just incase; buffer is not \0 terminated
-     */
     for( len=0; ; ++(*index) ){
         switch( source[*index] ){
             /* end of buffer */
