@@ -897,6 +897,8 @@ void usage(void){
 int main(int argc, char **argv){
     int exit_code = EXIT_SUCCESS;
     struct Program p = {0};
+    struct Instruction *now = 0;
+    struct Instruction *next = 0;
 
     if(    argc != 2
         || !strcmp("--help", argv[1])
@@ -937,6 +939,18 @@ int main(int argc, char **argv){
     }
 
 EXIT:
+
+	/* free the elements of the linked list of instructions allocated while
+	 * parsing, if parsing was indeed done  */
+    if ( p.start ){
+        now = p.start;
+        do
+        {
+            next = now->next;
+            free(now);
+            now = next;
+        } while( next );
+    }
 
     if( p.buf ){
         free(p.buf);
