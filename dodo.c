@@ -909,7 +909,7 @@ int main(int argc, char **argv){
         exit(EXIT_FAILURE);
     }
 
-    // read program into source
+    /* read program into source */
     p.source = slurp(stdin);
     if( ! p.source ){
         puts("Reading program failed");
@@ -917,14 +917,14 @@ int main(int argc, char **argv){
         goto EXIT;
     }
 
-    // parse program
+    /* parse program */
     if( parse(&p) ){
         puts("Parsing program failed");
         exit_code = EXIT_FAILURE;
         goto EXIT;
     }
 
-    // open file
+    /* open file */
     p.file = fopen(argv[1], "r+b");
     if( ! p.file ){
         printf("Failed to open specified file '%s'\n", argv[1]);
@@ -932,7 +932,7 @@ int main(int argc, char **argv){
         goto EXIT;
     }
 
-    // execute program
+    /* execute program */
     if( execute(&p) ){
         puts("Program execution failed");
         exit_code = EXIT_FAILURE;
@@ -946,8 +946,7 @@ EXIT:
      */
     if ( p.start ){
         now = p.start;
-        do
-        {
+        do {
             next = now->next;
             free(now);
             now = next;
