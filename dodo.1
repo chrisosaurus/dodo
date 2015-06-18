@@ -105,11 +105,11 @@ in dodo whitespace is non-significant except in the case of a newline ('\\n') te
 .br
 a backslash can be used as an escape character, useful mainly when the expected string or replacement string has to include a string delimiter (forward slash)
 
-e/foo\/bar/
+e/foo\\/bar/
 .br
-w/baz\\qux/
+w/baz\\\\qux/
 
-will replace \fIfoo/bar\fR with \fIbaz\qux\fR
+will replace \fIfoo/bar\fR with \fIbaz\\qux\fR
 .IR
 
 .SH AUTHOR
