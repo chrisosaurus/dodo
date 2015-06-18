@@ -2,6 +2,7 @@ dodo
 ====
 dodo - scriptable in place file editor
 
+
 WARNING
 -------
 dodo is a VERY early on work in progress, **not yet recommended for actual use**.
@@ -15,7 +16,7 @@ dodo is a non-interactive scriptable in place file editor.
 Purpose
 -------
 dodo was born from the need to efficiently edit very large files (16GB plain sql dumps),
-I was unable to so using my normal toolset (ed, sed or vim) and I realised that writing a tool
+I was unable to do so using my normal toolset (ed, sed or vim) and I realised that writing a tool
 specifically for this use case would be very simple.
 
 
@@ -33,9 +34,11 @@ dodo is run and supplied with a single argument representing the filename to wor
 
 dodo then reads it's commands from stdin,
 note that dodo is non-interactive so will not start work
-until it's stdin input is finished (it sees EOF).
+until it's stdin input is finished (it sees eof).
 
-note that in dodo all changes are flushed immediately; there are no concepts of 'saving', 'undo' or 'backups'.
+in dodo all changes are flushed immediately; there are no concepts of 'saving', 'undo' or 'backups'.
+
+dodo is really a very thin wrapper around `fread` and `fwrite`.
 
 example dodo usage:
 
@@ -99,6 +102,9 @@ write moves the cursor by the number of bytes written
 exit dodo, quit is not actually needed as EOF will trigger an implicit quit.
 
 
+Syntax
+------
+
 **comments:**
 dodo also supports comments
 
@@ -116,3 +122,4 @@ a backslash can be used as an escape character, useful mainly when the expected 
     w/baz\\qux/
 
 will replace `foo/bar` with `baz\qux`
+

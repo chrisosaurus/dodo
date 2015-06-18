@@ -1,15 +1,15 @@
 .TH dodo 1 dodo\-VERSION
 
+
 .SH NAME
-.P
 dodo - a scriptable in-place file ditor
 
+
 .SH SYNOPSIS
-.P
 .B dodo filename
 
+
 .SH DESCRIPTION
-.P
 dodo is a non-interactive scriptable in place file editor.
 It takes exactly 1 argument, the file to work on, and it takes its program input from stdin.
 .P
@@ -17,17 +17,20 @@ dodo was born from the need to efficiently edit very large files (16GB plain sql
 I was unable to so using my normal toolset (ed, sed or vim) and I realised that writing a tool
 specifically for this use case would be very simple.
 
+
 .SH WARNING
-.P
 dodo is a VERY early on work in progress, 
 .B not yet recommended for actual use.
 
+
 .SH USAGE
-.P
 dodo is run and supplied with a single argument representing the filename to work on.
 dodo then reads its commands from stdin.
 Note that dodo is non-interactive so will not start work until its stdin input is finished (it sees EOF).
-Also note that in dodo all changes are flushed immediately; there are no concepts of 'saving', 'undo' or 'backups'.
+In dodo all changes are flushed immediately; there are no concepts of 'saving', 'undo' or 'backups'.
+
+dodo is really a very thin wrapper around `fread` and `fwrite`.
+
 
 .IP "./dodo filename <<EOF"
  p          # print 100 bytes
@@ -49,7 +52,6 @@ Each of the commands is explained below in more detail.
 
 
 .SH COMMANDS
-.P
 dodo currently supports the following commands and syntax:
 
 .IP "\fIprint\fR"
@@ -84,12 +86,16 @@ write moves the cursor by the number of bytes written
 q
 
 exit dodo, quit is not actually needed as EOF will trigger an implicit quit.
+
+
+.SH Syntax
+
 .IR
 .IP "\fIcomments\fR"
 .br
 dodo also supports comments
 
-# this is a comment and spans until \n
+# this is a comment and spans until \\n
 .IR
 .IP "\fIwhitespace\fR"
 .br
