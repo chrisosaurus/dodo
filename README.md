@@ -123,3 +123,9 @@ a backslash can be used as an escape character, useful mainly when the expected 
 
 will replace `foo/bar` with `baz\qux`
 
+Contributions
+-------------
+Chris Hall (original author)
+David Phillips
+
+
