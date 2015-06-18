@@ -125,7 +125,7 @@ will replace `foo/bar` with `baz\qux`
 
 Contributions
 -------------
-Chris Hall (original author)
+Chris Hall
 
 David Phillips
 
