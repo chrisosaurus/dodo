@@ -1,21 +1,115 @@
 .TH dodo 1 dodo\-VERSION
 
 .SH NAME
-dodo - a scriptable in place file ditor
+.P
+dodo - a scriptable in-place file ditor
 
 .SH SYNOPSIS
+.P
 .B dodo filename
 
-
 .SH DESCRIPTION
-dodo is a scriptable in place file editor
+.P
+dodo is a non-interactive scriptable in place file editor.
+It takes exactly 1 argument, the file to work on, and it takes its program input from stdin.
+.P
+dodo was born from the need to efficiently edit very large files (16GB plain sql dumps),
+I was unable to so using my normal toolset (ed, sed or vim) and I realised that writing a tool
+specifically for this use case would be very simple.
 
-dodo takes exactly 1 argument, the file to work on
+.SH WARNING
+.P
+dodo is a VERY early on work in progress, 
+.B not yet recommended for actual use.
 
-dodo takes it's program input from stdin
+.SH USAGE
+.P
+dodo is run and supplied with a single argument representing the filename to work on.
+dodo then reads its commands from stdin.
+Note that dodo is non-interactive so will not start work until its stdin input is finished (it sees EOF).
+Also note that in dodo all changes are flushed immediately; there are no concepts of 'saving', 'undo' or 'backups'.
 
-.SH Author
+.IP "./dodo filename <<EOF"
+ p          # print 100 bytes
+ p5         # print 5 bytes ('hello')
+ e/hello/   # expect string 'hello'
+ b6         # goto byte 6 in file
+ e/world/   # expect string 'world'
+ w/marge/   # write string 'marge' (writes over 'world')
+ b38
+ e/sl\\/ash/ # expect string 'sl/ash'
+ w/slashy/  # write string 'sl/ash' with 'slashy'
+ q          # quit
+.IR
+.P
+EOF
+
+.P
+Each of the commands is explained below in more detail.
+
+
+.SH COMMANDS
+.P
+dodo currently supports the following commands and syntax:
+
+.IP "\fIprint\fR"
+.br
+p
+pnumber
+
+print specified number of bytes, if number is not specified will default to 100
+.IR
+.IP "\fIexpect\fR"
+.br
+e/string/
+
+check for 'string' at current cursor position, exit with error if not found.
+expect does not move the cursor.
+.IR
+.IP "\fIbyte\fR"
+.br
+bnumber
+
+move cursor to absolute byte 'number' within file
+.IR
+.IP "\fIwrite\fR"
+.br
+w/string/
+
+write 'string' to current cursor position, this will overwrite any characters in the way
+write moves the cursor by the number of bytes written
+.IR
+.IP "\fIquit\fR"
+.br
+q
+
+exit dodo, quit is not actually needed as EOF will trigger an implicit quit.
+.IR
+.IP "\fIcomments\fR"
+.br
+dodo also supports comments
+
+# this is a comment and spans until \n
+.IR
+.IP "\fIwhitespace\fR"
+.br
+in dodo whitespace is non-significant except in the case of a newline ('\\n') terminating a comment
+.IR
+.IP "\fIescape character\fR"
+.br
+a backslash can be used as an escape character, useful mainly when the expected string or replacement string has to include a string delimiter (forward slash)
+
+e/foo\/bar/
+.br
+w/baz\\qux/
+
+will replace \fIfoo/bar\fR with \fIbaz\qux\fR
+.IR
+
+.SH AUTHOR
 Dodo was made by Chris Hall <followingthepath AT gmail d0t com>
 
-.SH Bugs
-Report them.
+.SH BUGS
+Please report all bugs to the author, or report them on the project's GitHub issue tracker \fIhttps://github.com/mkfifo/dodo/issues\fR
+
+

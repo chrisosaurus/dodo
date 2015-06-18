@@ -46,6 +46,9 @@ example dodo usage:
         b6         # goto byte 6 in file
         e/world/   # expect string 'world'
         w/marge/   # write string 'marge' (writes over 'world')
+        b38
+        e/sl\/ash/ # expect string 'sl/ash'
+        w/slashy/  # write string 'sl/ash' with 'slashy'
         q          # quit
     EOF
 
@@ -106,5 +109,10 @@ dodo also supports comments
 
     in dodo whitespace is non-significant except in the case of a newline ('\n') terminating a comment
 
+**escape character:**
+a backslash can be used as an escape character, useful mainly when the expected string or replacement string has to include a string delimiter (forward slash)
 
+    e/foo\/bar/
+    w/baz\\qux/
 
+will replace `foo/bar` with `baz\qux`
