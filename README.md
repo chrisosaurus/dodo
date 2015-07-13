@@ -51,7 +51,7 @@ example dodo usage:
         w/marge/   # write string 'marge' (writes over 'world')
         b38
         e/sl\/ash/ # expect string 'sl/ash'
-        w/slashy/  # write string 'sl/ash' with 'slashy'
+        w/slashy/  # write over string 'sl/ash' with 'slashy'
         q          # quit
     EOF
 
