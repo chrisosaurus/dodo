@@ -5,7 +5,8 @@ dodo - scriptable in place file editor
 
 WARNING
 -------
-dodo is a VERY early on work in progress, **not yet recommended for actual use**.
+dodo is a work in progress so it is highly recommended you backup any files you are
+going to modify using dodo.
 
 
 Description
