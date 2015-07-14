@@ -31,10 +31,11 @@ clean:
 	@rm -f dodo ${OBJ} dodo-${VERSION}.tar.gz
 
 dist: clean
-	@echo creating dist tarball
+	@echo creating dist tarball 'dodo-${VERSION}.tar.gz'
 	@mkdir -p dodo-${VERSION}
-	@cp -R LICENSE Makefile config.mk \
-		README TODO dodo.1 codes.h ${SRC} dodo-${VERSION}
+	@cp -R config.mk dodo.1 LICENSE \
+		Makefile README.md test.sh ${SRC} \
+		dodo-${VERSION}
 	@tar -cf dodo-${VERSION}.tar dodo-${VERSION}
 	@gzip dodo-${VERSION}.tar
 	@rm -rf dodo-${VERSION}
