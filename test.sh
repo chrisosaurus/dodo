@@ -14,6 +14,13 @@ cat <<EOF > "$TESTFILENAME"
 hello world how are you mutter mutter sl/ash
 EOF
 
+warn() {
+    if [[ -e $TESTFILENAME ]] ; then
+        printf 'Leaving tmp file laying around as '\''%s'\''\n' "$TESTFILENAME"
+        exit 1
+    fi
+}
+trap warn EXIT
 
 echo -e "\nRunning dodo"
 valgrind $VALGRINDOPTS ./dodo "$TESTFILENAME" <<EOF
@@ -40,7 +47,6 @@ if [ ! "$GOT" = "$EXPECTED" ]; then
     echo "Expected '$EXPECTED'"
     # do not clean up on failure to allow inspection of file
     #rm -f -- "$TESTFILENAME"
-    echo "Leaving tmp file laying around as '$TESTFILENAME'"
     exit 1
 fi
 
