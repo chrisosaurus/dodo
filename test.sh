@@ -6,17 +6,17 @@ hash valgrind || exit
 
 set -eu
 
-TESTFILENAME="tmp_testing_file"
+TESTFILENAME=$(mktemp) || exit
 VALGRINDOPTS="--track-origins=yes --error-exitcode=1 --leak-check=full --show-reachable=yes"
 
 echo -e "\nWriting file"
-cat <<EOF > $TESTFILENAME
+cat <<EOF > "$TESTFILENAME"
 hello world how are you mutter mutter sl/ash
 EOF
 
 
 echo -e "\nRunning dodo"
-valgrind $VALGRINDOPTS ./dodo $TESTFILENAME <<EOF
+valgrind $VALGRINDOPTS ./dodo "$TESTFILENAME" <<EOF
     p          # print 100 bytes
     p5         # print 5 bytes ('hello')
     e/hello/   # expect string 'hello'
@@ -31,7 +31,7 @@ EOF
 
 
 echo -e "\nComparing output"
-GOT=`cat $TESTFILENAME`
+GOT=`cat "$TESTFILENAME"`
 EXPECTED="hello marge how are you mutter mutter slashy"
 
 if [ ! "$GOT" = "$EXPECTED" ]; then
@@ -39,7 +39,7 @@ if [ ! "$GOT" = "$EXPECTED" ]; then
     echo "Got '$GOT'"
     echo "Expected '$EXPECTED'"
     # do not clean up on failure to allow inspection of file
-    #rm -f $TESTFILENAME
+    #rm -f -- "$TESTFILENAME"
     echo "Leaving tmp file laying around as '$TESTFILENAME'"
     exit 1
 fi
@@ -48,5 +48,5 @@ fi
 echo -e "\nAll green"
 
 echo -e "\nRemoving temporary file"
-rm -f $TESTFILENAME
+rm -f -- "$TESTFILENAME"
 
