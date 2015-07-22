@@ -1,11 +1,7 @@
 #!/usr/bin/env bash
 
 # check for valgrind
-which valgrind
-if [[ 0 -ne $? ]]; then
-    echo "No valgrind found"
-    exit 1
-fi
+hash valgrind || exit
 
 
 set -eu
