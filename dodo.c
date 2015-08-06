@@ -3,6 +3,13 @@
 #include <string.h> /* strcmp, strncmp */
 #include <ctype.h> /* isdigit */
 
+/* FIXME ignored unused parameter
+ * currently unused:
+ * parse_line: source, index
+ * eval_line: p, cur
+ */
+#pragma GCC diagnostic ignored "-Wunused-parameter"
+
 /***** data structures and manipulation *****/
 
 enum Command {
