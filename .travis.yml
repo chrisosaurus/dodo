@@ -2,9 +2,8 @@ language: c
 
 compiler: gcc
 
-sudo: false
-
 before_install:
+        - sudo apt-get install valgrind
         - pip install --user cpp-coveralls
 
 script:
