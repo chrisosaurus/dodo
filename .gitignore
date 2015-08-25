@@ -2,3 +2,4 @@ dodo
 dodo.o
 tmp_testing_file
 dodo-*.tar.gz
+dodo_coveralls.sh
