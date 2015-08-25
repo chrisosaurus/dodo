@@ -1,5 +1,5 @@
-dodo
-====
+# dodo [![Build Status](https://travis-ci.org/mkfifo/dodo.svg)](https://travis-ci.org/mkfifo/dodo) [![Coverage Status](https://coveralls.io/repos/mkfifo/dodo/badge.svg)](https://coveralls.io/github/mkfifo/dodo)
+
 dodo - scriptable in place file editor
 
 

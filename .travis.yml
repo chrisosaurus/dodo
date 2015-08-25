@@ -1,0 +1,15 @@
+language: c
+
+compiler: gcc
+
+sudo: false
+
+before_install:
+        - pip install --user cpp-coveralls
+
+script:
+        - make test
+
+after_success:
+        - coveralls --gcov-options '\-lp'
+
