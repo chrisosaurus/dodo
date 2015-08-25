@@ -1,4 +1,0 @@
-TODO: 
-
-* clean up CFLAGS guff from config.mk, only need profiling information for testing build
-

@@ -8,7 +8,7 @@ include config.mk
 SRC = dodo.c
 OBJ = ${SRC:.c=.o}
 
-all: options dodo 
+all: options dodo
 
 options:
 	@echo dodo build options:
@@ -56,8 +56,14 @@ uninstall:
 	@echo removing manual page from ${DESTDIR}${MANPREFIX}/man1
 	@rm -f ${DESTDIR}${MANPREFIX}/man1/dodo.1
 
-test: dodo
+debug:
+	@echo Building dodo debug build
+	@echo CC -o $@
+	@${CC} -g -c ${DEBUG_CFLAGS} ${SRC}
+	@${CC} -o dodo ${DEBUG_LDFLAGS} ${OBJ}
+
+test: debug
 	@echo Running test.sh
 	@./test.sh
 
-.PHONY: all options clean dist install uninstall test
+.PHONY: all options clean dist install uninstall test debug
