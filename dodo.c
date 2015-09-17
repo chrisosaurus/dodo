@@ -868,15 +868,69 @@ EXIT:
 }
 
 
+/* frees the elements of the linked list of instructions
+ * allocated while parsing
+ */
+void scrub(struct Program *p)
+{
+    struct Instruction *now = 0;
+    struct Instruction *next = 0;
+    if ( p->start ){
+        now = p->start;
+        do {
+            next = now->next;
+            free(now);
+            now = next;
+        } while( next );
+    }
+    p->start = NULL;
+}
+
+int repl(struct Program *p){
+    int exit_code = EXIT_FAILURE;
+    char line[4096]; /* FIXME: Perhaps use slurp-like behaviour instead */
+
+    /* FIXME: doesn't handle quit command */
+    while( 1 ){
+        printf("dodo: ");
+        p->source = fgets(line, sizeof(line), stdin);
+
+        if ( ! p->source ){
+            printf("fgets failed in repl\n");
+            exit_code = feof(stdin)? EXIT_SUCCESS : EXIT_FAILURE;
+            goto EXIT;
+        }
+
+        if ( parse(p) ){
+            printf("Parsing failed\n");
+            exit_code = EXIT_FAILURE;
+            goto EXIT;
+        }
+
+        if ( execute(p) ){
+            printf("Execution failed\n");
+            exit_code = EXIT_FAILURE;
+            goto EXIT;
+        }
+        scrub(p);
+    }
+
+EXIT:
+    /* force null to stop free() */
+    p->source = NULL;
+    return exit_code;
+}
+
+
 
 /***** main *****/
 void usage(void){
     puts("dodo - scriptable in place file editor\n"
-         "dodo takes a single argument of <filename>\n"
+         "In non-interactive mode, dodo takes a single argument of <filename>\n"
          "and will read commands from stdin\n"
          "\n"
          "example:\n"
-         "  dodo <filename> <<EOF\n"
+         "  dodo [-i|--interactive] <filename> <<EOF\n"
          "  b6        # goto byte 6\n"
          "  e/world/  # check for string 'world'\n"
          "  w/hello/  # write string 'hello'\n"
@@ -897,11 +951,11 @@ void usage(void){
 
 int main(int argc, char **argv){
     int exit_code = EXIT_SUCCESS;
+    int do_repl = 0;
     struct Program p = {0};
-    struct Instruction *now = 0;
-    struct Instruction *next = 0;
 
-    if(    argc != 2
+    if(    argc < 2
+        || argc > 3
         || !strcmp("--help", argv[1])
         || !strcmp("-h", argv[1])
     ){
@@ -909,49 +963,55 @@ int main(int argc, char **argv){
         exit(EXIT_FAILURE);
     }
 
-    /* read program into source */
-    p.source = slurp(stdin);
-    if( ! p.source ){
-        puts("Reading program failed");
-        exit_code = EXIT_FAILURE;
-        goto EXIT;
+    /* catch 'interactive' command line argument */
+    if (    argc == 3
+         && (!strcmp("--interactive", argv[1])
+         || !strcmp("-i", argv[1]))){
+        do_repl = 1;
     }
 
-    /* parse program */
-    if( parse(&p) ){
-        puts("Parsing program failed");
-        exit_code = EXIT_FAILURE;
-        goto EXIT;
+    /* one-shot read and execute if we're not heading into the repl */
+    if ( ! do_repl )
+    {
+        /* read program into source */
+        p.source = slurp(stdin);
+        if( ! p.source ){
+            puts("Reading program failed");
+            exit_code = EXIT_FAILURE;
+            goto EXIT;
+        }
+
+        /* parse program */
+        if( parse(&p) ){
+            puts("Parsing program failed");
+            exit_code = EXIT_FAILURE;
+            goto EXIT;
+        }
     }
 
     /* open file */
-    p.file = fopen(argv[1], "r+b");
+    p.file = fopen(argv[1 + do_repl], "r+b");
     if( ! p.file ){
-        printf("Failed to open specified file '%s'\n", argv[1]);
+        printf("Failed to open specified file '%s'\n", argv[1 + do_repl]);
         exit_code = EXIT_FAILURE;
         goto EXIT;
     }
 
-    /* execute program */
-    if( execute(&p) ){
-        puts("Program execution failed");
-        exit_code = EXIT_FAILURE;
-        goto EXIT;
+    if ( do_repl ) {
+        /* execute the repl */
+        repl(&p);
+    } else {
+        /* execute program */
+        if( execute(&p) ){
+            puts("Program execution failed");
+            exit_code = EXIT_FAILURE;
+            goto EXIT;
+        }
     }
 
 EXIT:
 
-    /* free the elements of the linked list of instructions allocated while
-     * parsing, if parsing was indeed done
-     */
-    if ( p.start ){
-        now = p.start;
-        do {
-            next = now->next;
-            free(now);
-            now = next;
-        } while( next );
-    }
+    scrub(&p);
 
     if( p.buf ){
         free(p.buf);
