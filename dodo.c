@@ -257,6 +257,7 @@ struct Instruction * parse_number(struct Instruction *i, char *source, size_t *i
     /* read in number */
     if( ! sscanf(&(source[*index]), "%d", &(i->argument.num)) ){
         puts("Parse_number: failed to read in number");
+        free(i);
         return 0;
     }
 
@@ -287,6 +288,7 @@ EXIT:
 }
 
 struct Instruction * parse_print(char *source, size_t *index){
+    struct Instruction *ret = 0;
     struct Instruction *i = 0;
 
     i = new_instruction(PRINT);
@@ -304,6 +306,7 @@ struct Instruction * parse_print(char *source, size_t *index){
 
         default:
             printf("Parse_print: unexpected character '%c', expected 'w'\n", source[*index]);
+            free(i);
             return 0;
             break;
     }
@@ -314,7 +317,10 @@ struct Instruction * parse_print(char *source, size_t *index){
      * if next character is a number then we are in the first form
      */
     if( isdigit(source[*index]) ){
-        return parse_number(i, source, index);
+        ret = parse_number(i, source, index);
+        if (ret == 0)
+            free(ret);
+        return ret;
     }
 
     /* otherwise there is no number and we are in second form (default to 100 bytes) */
@@ -322,6 +328,7 @@ struct Instruction * parse_print(char *source, size_t *index){
 }
 
 struct Instruction * parse_byte(char *source, size_t *index){
+    struct Instruction *ret = 0;
     struct Instruction *i = 0;
 
     i = new_instruction(BYTE);
@@ -338,10 +345,16 @@ struct Instruction * parse_byte(char *source, size_t *index){
             break;
         default:
             printf("Unexpected character '%c', expected 'b'\n", source[*index]);
+            free(i);
+            return 0;
             break;
     }
 
-    return parse_number(i, source, index);
+    ret = parse_number(i, source, index);
+    if (ret == 0)
+        free(ret);
+
+    return ret;
 }
 
 struct Instruction * parse_line(char *source, size_t *index){
@@ -353,11 +366,14 @@ struct Instruction * parse_line(char *source, size_t *index){
         return 0;
     }
 
+    free(i);
+
     puts("parse_line unimplemented");
     return 0; /* FIXME unimplemented */
 }
 
 struct Instruction * parse_expect(char *source, size_t *index){
+    struct Instruction *ret = 0;
     struct Instruction *i = 0;
 
     i = new_instruction(EXPECT);
@@ -375,14 +391,20 @@ struct Instruction * parse_expect(char *source, size_t *index){
 
         default:
             printf("Parse_expect: unexpected character '%c', expected 'e'\n", source[*index]);
+            free(i);
             return 0;
             break;
     }
 
-    return parse_string(i, source, index);
+    ret = parse_string(i, source, index);
+    if (ret == 0)
+        free(i);
+
+    return ret;
 }
 
 struct Instruction * parse_write(char *source, size_t *index){
+    struct Instruction *ret = 0;
     struct Instruction *i = 0;
 
     i = new_instruction(WRITE);
@@ -400,11 +422,15 @@ struct Instruction * parse_write(char *source, size_t *index){
 
         default:
             printf("Parse_write: unexpected character '%c', expected 'w'\n", source[*index]);
+            free(i);
             return 0;
             break;
     }
+    ret = parse_string(i, source, index);
+    if (ret == 0)
+        free(i);
 
-    return parse_string(i, source, index);
+    return ret;
 }
 
 struct Instruction * parse_quit(char *source, size_t *index){
