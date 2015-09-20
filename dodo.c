@@ -319,7 +319,7 @@ struct Instruction * parse_print(char *source, size_t *index){
     if( isdigit(source[*index]) ){
         ret = parse_number(i, source, index);
         if (ret == 0)
-            free(ret);
+            free(i);
         return ret;
     }
 
@@ -352,7 +352,7 @@ struct Instruction * parse_byte(char *source, size_t *index){
 
     ret = parse_number(i, source, index);
     if (ret == 0)
-        free(ret);
+        free(i);
 
     return ret;
 }
