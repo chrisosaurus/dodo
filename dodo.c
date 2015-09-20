@@ -927,17 +927,11 @@ int repl(struct Program *p){
             goto EXIT;
         }
 
-        if ( parse(p) ){
-            printf("Parsing failed\n");
-            exit_code = EXIT_FAILURE;
-            goto EXIT;
-        }
+        /* note we don't error-out on parse or execute,
+         * keep the repl rolling */
+        parse(p);
+        execute(p);
 
-        if ( execute(p) ){
-            printf("Execution failed\n");
-            exit_code = EXIT_FAILURE;
-            goto EXIT;
-        }
         scrub(p);
     }
 
