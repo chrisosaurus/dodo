@@ -922,8 +922,12 @@ int repl(struct Program *p){
         p->source = fgets(line, sizeof(line), stdin);
 
         if ( ! p->source ){
-            printf("fgets failed in repl\n");
-            exit_code = feof(stdin)? EXIT_SUCCESS : EXIT_FAILURE;
+            if ( feof(stdin) ){
+                exit_code = EXIT_SUCCESS;
+            } else {
+                printf("fgets failed in repl\n");
+                exit_code = EXIT_FAILURE;
+            }
             goto EXIT;
         }
 
