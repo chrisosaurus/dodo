@@ -11,7 +11,7 @@ dodo - a scriptable in-place file ditor
 
 .SH DESCRIPTION
 dodo is a non-interactive scriptable in place file editor.
-It takes exactly 1 argument, the file to work on, and it takes its program input from stdin.
+It takes the file to work on as an argument, and it takes its program input from stdin.
 .P
 dodo was born from the need to efficiently edit very large files (16GB plain sql dumps),
 I was unable to so using my normal toolset (ed, sed or vim) and I realised that writing a tool
@@ -24,15 +24,17 @@ going to modify using dodo.
 
 
 .SH USAGE
-dodo is run and supplied with a single argument representing the filename to work on.
+dodo is run and supplied with its last argument representing the filename to work on.
 dodo then reads its commands from stdin.
-Note that dodo is non-interactive so will not start work until its stdin input is finished (it sees EOF).
+In its default mode, dodo is non-interactive so will not start work until its stdin input is finished (it sees EOF).
+An optional 'interactive' mode is available in which dodo provides a prompt and executes its input upon a carriage return.
+This is especially useful for playing with the language amongst other things.
 In dodo all changes are flushed immediately; there are no concepts of 'saving', 'undo' or 'backups'.
 
 dodo is really a very thin wrapper around `fread` and `fwrite`.
 
 
-.IP "./dodo filename <<EOF"
+.IP "./dodo [-i|--interactive] filename <<EOF"
  p          # print 100 bytes
  p5         # print 5 bytes ('hello')
  e/hello/   # expect string 'hello'
