@@ -204,8 +204,7 @@ struct Instruction * parse_string(struct Instruction *i, char *source, size_t *i
                 memmove(source+*index,
                         source+*index+1,
                         strlen(source+*index));
-                (*index)++;
-                len+=2;
+                len++;
                 break;
 
             /* terminating delimiter */
@@ -501,8 +500,6 @@ EXIT:
 int parse(struct Program *program){
     /* index into source */
     size_t index = 0;
-    /* length of source */
-    size_t len = 0;
     /* result from call to parse_ functions */
     struct Instruction *res = 0;
     /* place to store next parsed Instruction */
@@ -517,10 +514,9 @@ int parse(struct Program *program){
 
     source = program->source;
 
-    len = strlen(source);
     store = &(program->start);
 
-    while( index < len ){
+    while( source[index] ){
         switch( source[index] ){
             case 'p':
             case 'P':
@@ -579,7 +575,6 @@ int parse(struct Program *program){
 
             case 'q':
             case 'Q':
-            case '\0': /* treat \0 as implicit quit */
                 res = parse_quit(source, &index);
                 if( ! res ){
                     puts("Parse: failed in call to parse_quit");
@@ -619,7 +614,7 @@ EXIT:
     /* null terminator for program */
     *store = 0;
 
-    return 0;
+    return 0;   
 }
 
 
@@ -876,8 +871,8 @@ int execute(struct Program *p){
                 break;
 
             case QUIT:
-                /* escape from loop */
-                goto EXIT;
+                /* explicit quit, return -1 */
+                return -1;
                 break;
 
             default:
@@ -887,9 +882,7 @@ int execute(struct Program *p){
         }
     }
 
-    /* implicit (EOF) or explicit (Command quit) => exit */
-EXIT:
-
+    /* implicit (EOF) quit => exit quietly */
     return 0;
 }
 
@@ -936,7 +929,9 @@ int repl(struct Program *p){
         if ( parse(p) ){
             printf("Parsing program failed in repl\n");
         } else {
-            execute(p);
+            if( execute(p) == -1 ){
+                goto EXIT;
+            }
         }
 
         scrub(p);
@@ -1029,7 +1024,7 @@ int main(int argc, char **argv){
         repl(&p);
     } else {
         /* execute program */
-        if( execute(&p) ){
+        if( execute(&p) > 0 ){
             puts("Program execution failed");
             exit_code = EXIT_FAILURE;
             goto EXIT;
