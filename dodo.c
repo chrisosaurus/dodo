@@ -933,8 +933,11 @@ int repl(struct Program *p){
 
         /* note we don't error-out on parse or execute,
          * keep the repl rolling */
-        parse(p);
-        execute(p);
+        if ( parse(p) ){
+            printf("Parsing program failed in repl\n");
+        } else {
+            execute(p);
+        }
 
         scrub(p);
     }
