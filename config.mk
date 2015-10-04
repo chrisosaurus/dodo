@@ -6,7 +6,7 @@ MANPREFIX = ${PREFIX}/share/man
 INCS = 
 LIBS = 
 
-CFLAGS = -std=c99 -pedantic -Werror -Wall -Wstrict-prototypes -Wshadow -Wdeclaration-after-statement -Wunused-function ${INCS}
+CFLAGS = -std=c99 -pedantic -Werror -Wall -Wstrict-prototypes -Wshadow -Wdeclaration-after-statement -Wunused-function -D_XOPEN_SOURCE -D_XOPEN_SOURCE_EXTENDED ${INCS}
 # NB: including  -fprofile-arcs -ftest-coverage for gcov
 # travis wasn't happy with -Wmaybe-uninitialized  so removed for now
 # -Wextra was removed due to unused params
