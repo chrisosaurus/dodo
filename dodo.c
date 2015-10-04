@@ -317,7 +317,7 @@ struct Instruction * parse_print(char *source, size_t *index){
      */
     if( isdigit(source[*index]) ){
         ret = parse_number(i, source, index);
-        if (ret == 0)
+        if(ret == 0)
             free(i);
         return ret;
     }
@@ -350,7 +350,7 @@ struct Instruction * parse_byte(char *source, size_t *index){
     }
 
     ret = parse_number(i, source, index);
-    if (ret == 0)
+    if(ret == 0)
         free(i);
 
     return ret;
@@ -396,7 +396,7 @@ struct Instruction * parse_expect(char *source, size_t *index){
     }
 
     ret = parse_string(i, source, index);
-    if (ret == 0)
+    if(ret == 0)
         free(i);
 
     return ret;
@@ -426,7 +426,7 @@ struct Instruction * parse_write(char *source, size_t *index){
             break;
     }
     ret = parse_string(i, source, index);
-    if (ret == 0)
+    if(ret == 0)
         free(i);
 
     return ret;
@@ -894,7 +894,7 @@ void scrub(struct Program *p)
 {
     struct Instruction *now = 0;
     struct Instruction *next = 0;
-    if ( p->start ){
+    if( p->start ){
         now = p->start;
         do {
             next = now->next;
@@ -914,8 +914,8 @@ int repl(struct Program *p){
         printf("dodo: ");
         p->source = fgets(line, sizeof(line), stdin);
 
-        if ( ! p->source ){
-            if ( feof(stdin) ){
+        if( ! p->source ){
+            if( feof(stdin) ){
                 exit_code = EXIT_SUCCESS;
             } else {
                 printf("fgets failed in repl\n");
@@ -926,7 +926,7 @@ int repl(struct Program *p){
 
         /* note we don't error-out on parse or execute,
          * keep the repl rolling */
-        if ( parse(p) ){
+        if( parse(p) ){
             printf("Parsing program failed in repl\n");
         } else {
             if( execute(p) == -1 ){
@@ -986,14 +986,14 @@ int main(int argc, char **argv){
     }
 
     /* catch 'interactive' command line argument */
-    if (    argc == 3
+    if(    argc == 3
          && (!strcmp("--interactive", argv[1])
          || !strcmp("-i", argv[1]))){
         do_repl = 1;
     }
 
     /* one-shot read and execute if we're not heading into the repl */
-    if ( ! do_repl )
+    if( ! do_repl )
     {
         /* read program into source */
         p.source = slurp(stdin);
@@ -1019,7 +1019,7 @@ int main(int argc, char **argv){
         goto EXIT;
     }
 
-    if ( do_repl ) {
+    if( do_repl ) {
         /* execute the repl */
         repl(&p);
     } else {
