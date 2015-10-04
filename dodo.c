@@ -1037,7 +1037,6 @@ void usage(void){
 
 int main(int argc, char **argv){
     int exit_code = EXIT_SUCCESS;
-    int do_repl = 0;
     struct Program p = {0};
 
     if(    argc < 2
@@ -1051,13 +1050,15 @@ int main(int argc, char **argv){
 
     /* catch 'interactive' command line argument */
     if(    argc == 3
-         && (!strcmp("--interactive", argv[1])
-         || !strcmp("-i", argv[1]))){
-        do_repl = 1;
+        && strcmp("--interactive", argv[1])
+        && strcmp("-i", argv[1])
+    ){
+        usage();
+        exit(EXIT_FAILURE);
     }
 
     /* one-shot read and execute if we're not heading into the repl */
-    if( ! do_repl )
+    if( argc == 2 )
     {
         /* read program into source */
         p.source = slurp(stdin);
@@ -1076,15 +1077,15 @@ int main(int argc, char **argv){
     }
 
     /* open file */
-    p.path = argv[1 + do_repl];
+    p.path = argv[argc - 1];
     p.file = fopen(p.path, "r+b");
     if( ! p.file ){
-        printf("Failed to open specified file '%s'\n", argv[1 + do_repl]);
+        printf("Failed to open specified file '%s'\n", argv[argc - 1]);
         exit_code = EXIT_FAILURE;
         goto EXIT;
     }
 
-    if( do_repl ) {
+    if( argc == 3 ) {
         /* execute the repl */
         repl(&p);
     } else {
