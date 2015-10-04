@@ -1,7 +1,9 @@
+#include <unistd.h> /* truncate */
 #include <stdio.h> /* fopen, fseek, fread, fwrite, FILE */
 #include <stdlib.h> /* exit */
 #include <string.h> /* strcmp, strncmp */
 #include <ctype.h> /* isdigit */
+
 
 /***** data structures and manipulation *****/
 
@@ -29,6 +31,9 @@ enum Command {
      * leaves the cursor positioned after the write
      */
     WRITE,
+    /* truncates file at cursor position
+     */
+    TRUNCATE,
     /* exits with code EXIT_SUCCESS
      */
     QUIT
@@ -54,6 +59,8 @@ struct Instruction {
 struct Program {
     /* linked list of Instruction(s) */
     struct Instruction *start;
+    /* path to file program is operating on */
+    char* path;
     /* file program is operating on */
     FILE *file;
     /* current offset into file */
@@ -432,6 +439,31 @@ struct Instruction * parse_write(char *source, size_t *index){
     return ret;
 }
 
+struct Instruction * parse_truncate(char *source, size_t *index){
+    struct Instruction *i = 0;
+
+    switch( source[*index] ){
+        case 't':
+        case 'T':
+            /* advance past letter */
+            ++(*index);
+            break;
+
+        default:
+            printf("Parse_truncate: unexpected character '%c', expected 't'\n", source[*index]);
+            return 0;
+    }
+
+
+    i = new_instruction(TRUNCATE);
+    if( ! i ){
+        puts("Parse_truncate: call to new_instruction failed");
+        return 0;
+    }
+
+    return i;
+}
+
 struct Instruction * parse_quit(char *source, size_t *index){
     struct Instruction *i = 0;
 
@@ -567,6 +599,17 @@ int parse(struct Program *program){
                 res = parse_write(source, &index);
                 if( ! res ){
                     puts("Parse: failed in call to parse_write");
+                    return 1;
+                }
+                *store = res;
+                store = &(res->next);
+                break;
+
+            case 't':
+            case 'T':
+                res = parse_truncate(source, &index);
+                if( ! res ){
+                    puts("Parse: failed in call to parse_truncate");
                     return 1;
                 }
                 *store = res;
@@ -817,6 +860,20 @@ int eval_write(struct Program *p, struct Instruction *cur){
     return 0;
 }
 
+/* eval TRUNCATE command
+ * truncate file at cursor position
+ * returns 0 on success
+ * returns 1 on failure
+ * failure will cause program to halt
+ */
+int eval_truncate(struct Program *p, struct Instruction *cur){
+    if( truncate(p->path, p->offset) == -1 ){
+        perror("eval_truncate: error in call to truncate");
+        return 1;
+    }
+    return 0;
+}
+
 /* execute provided Program
  * return 0 on success
  * return 1 on failure
@@ -865,6 +922,13 @@ int execute(struct Program *p){
 
             case WRITE:
                 ret = eval_write(p, cur);
+                if( ret ){
+                    return ret;
+                }
+                break;
+
+            case TRUNCATE:
+                ret = eval_truncate(p, cur);
                 if( ret ){
                     return ret;
                 }
@@ -1012,7 +1076,8 @@ int main(int argc, char **argv){
     }
 
     /* open file */
-    p.file = fopen(argv[1 + do_repl], "r+b");
+    p.path = argv[1 + do_repl];
+    p.file = fopen(p.path, "r+b");
     if( ! p.file ){
         printf("Failed to open specified file '%s'\n", argv[1 + do_repl]);
         exit_code = EXIT_FAILURE;

@@ -96,6 +96,14 @@ write 'string' to current cursor position, this will overwrite any characters in
 write moves the cursor by the number of bytes written
 
 
+**truncate:**
+.br
+t
+
+truncate the file at the current cursor position.
+Note that since the cursor can be inside or outside of the file, this can be used to truncate or extend files.
+
+
 **quit:**
 
     q

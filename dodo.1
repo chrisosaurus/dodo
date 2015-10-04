@@ -83,6 +83,13 @@ w/string/
 write 'string' to current cursor position, this will overwrite any characters in the way
 write moves the cursor by the number of bytes written
 .IR
+.IP "\fItruncate\fR"
+.br
+t
+
+truncate the file at the current cursor position.
+Note that since the cursor can be inside or outside of the file, this can be used to truncate or extend files.
+.IR
 .IP "\fIquit\fR"
 .br
 q
