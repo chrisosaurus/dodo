@@ -161,17 +161,17 @@ struct Instruction * parse_string(struct Instruction *i, char *source, size_t *i
 
     /* check arguments */
     if( ! i ){
-        puts("Parse_string: null instruction");
+        puts("parse_string: null instruction");
         return 0;
     }
 
     if( ! source ){
-        puts("Parse_string: null source");
+        puts("parse_string: null source");
         return 0;
     }
 
     if( ! index ){
-        puts("Parse_string: null index");
+        puts("parse_string: null index");
         return 0;
     }
 
@@ -193,7 +193,7 @@ struct Instruction * parse_string(struct Instruction *i, char *source, size_t *i
             /* end of buffer */
             case '\0':
                 /* error, expected terminating / */
-                puts("Parse_string: unexpected end of source buffer, expected terminating delimiter'/'");
+                puts("parse_string: unexpected end of source buffer, expected terminating delimiter'/'");
                 return 0;
                 break;
 
@@ -239,24 +239,24 @@ EXIT:
 struct Instruction * parse_number(struct Instruction *i, char *source, size_t *index){
     /* check arguments */
     if( ! i ){
-        puts("Parse_number: null instruction");
+        puts("parse_number: null instruction");
         return 0;
     }
 
     if( ! source ){
-        puts("Parse_number: null source");
+        puts("parse_number: null source");
         return 0;
     }
 
     if( ! index ){
-        puts("Parse_number: null index");
+        puts("parse_number: null index");
         return 0;
     }
 
 
     /* read in number */
     if( ! sscanf(&(source[*index]), "%d", &(i->argument.num)) ){
-        puts("Parse_number: failed to read in number");
+        puts("parse_number: failed to read in number");
         free(i);
         return 0;
     }
@@ -293,7 +293,7 @@ struct Instruction * parse_print(char *source, size_t *index){
 
     i = new_instruction(PRINT);
     if( ! i ){
-        puts("Parse_print: call to new_instruction failed");
+        puts("parse_print: call to new_instruction failed");
         return 0;
     }
 
@@ -305,7 +305,7 @@ struct Instruction * parse_print(char *source, size_t *index){
             break;
 
         default:
-            printf("Parse_print: unexpected character '%c', expected 'w'\n", source[*index]);
+            printf("parse_print: unexpected character '%c', expected 'w'\n", source[*index]);
             free(i);
             return 0;
             break;
@@ -333,7 +333,7 @@ struct Instruction * parse_byte(char *source, size_t *index){
 
     i = new_instruction(BYTE);
     if( ! i ){
-        puts("Parse_byte: call to new_instruction failed");
+        puts("parse_byte: call to new_instruction failed");
         return 0;
     }
 
@@ -344,7 +344,7 @@ struct Instruction * parse_byte(char *source, size_t *index){
             ++(*index);
             break;
         default:
-            printf("Unexpected character '%c', expected 'b'\n", source[*index]);
+            printf("parse_byte: unexpected character '%c', expected 'b'\n", source[*index]);
             free(i);
             return 0;
             break;
@@ -362,7 +362,7 @@ struct Instruction * parse_line(char *source, size_t *index){
 
     i = new_instruction(LINE);
     if( ! i ){
-        puts("Parse_line: call to new_instruction failed");
+        puts("parse_line: call to new_instruction failed");
         return 0;
     }
 
@@ -378,7 +378,7 @@ struct Instruction * parse_expect(char *source, size_t *index){
 
     i = new_instruction(EXPECT);
     if( ! i ){
-        puts("Parse_expect: call to new_instruction failed");
+        puts("parse_expect: call to new_instruction failed");
         return 0;
     }
 
@@ -390,7 +390,7 @@ struct Instruction * parse_expect(char *source, size_t *index){
             break;
 
         default:
-            printf("Parse_expect: unexpected character '%c', expected 'e'\n", source[*index]);
+            printf("parse_expect: unexpected character '%c', expected 'e'\n", source[*index]);
             free(i);
             return 0;
             break;
@@ -409,7 +409,7 @@ struct Instruction * parse_write(char *source, size_t *index){
 
     i = new_instruction(WRITE);
     if( ! i ){
-        puts("Parse_write: call to new_instruction failed");
+        puts("parse_write: call to new_instruction failed");
         return 0;
     }
 
@@ -421,7 +421,7 @@ struct Instruction * parse_write(char *source, size_t *index){
             break;
 
         default:
-            printf("Parse_write: unexpected character '%c', expected 'w'\n", source[*index]);
+            printf("parse_write: unexpected character '%c', expected 'w'\n", source[*index]);
             free(i);
             return 0;
             break;
@@ -445,14 +445,14 @@ struct Instruction * parse_quit(char *source, size_t *index){
             break;
 
         default:
-            printf("Parse_quit: unexpected character '%c'\n", source[*index]);
+            printf("parse_quit: unexpected character '%c'\n", source[*index]);
             return 0;
     }
 
 
     i = new_instruction(QUIT);
     if( ! i ){
-        puts("Parse_quit: call to new_instruction failed");
+        puts("parse_quit: call to new_instruction failed");
         return 0;
     }
 
@@ -466,7 +466,7 @@ struct Instruction * parse_quit(char *source, size_t *index){
 int parse_comment(char *source, size_t *index){
 
     if( source[*index] != '#' ){
-        printf("Parse_comment: expected '#', got '%c'\n", source[*index]);
+        printf("parse_comment: expected '#', got '%c'\n", source[*index]);
         return 1;
     }
 
@@ -511,7 +511,7 @@ int parse(struct Program *program){
     char *source = 0;
 
     if( ! program || ! program->source ){
-        puts("Parse called with null program or source");
+        puts("parse: called with null program or source");
         return 1;
     }
 
@@ -526,7 +526,7 @@ int parse(struct Program *program){
             case 'P':
                 res = parse_print(source, &index);
                 if( ! res ){
-                    puts("Parse: failed in call to parse_print");
+                    puts("parse: failed in call to parse_print");
                     return 1;
                 }
                 *store = res;
@@ -537,7 +537,7 @@ int parse(struct Program *program){
             case 'B':
                 res = parse_byte(source, &index);
                 if( ! res ){
-                    puts("Parse: failed in call to parse_byte");
+                    puts("parse: failed in call to parse_byte");
                     return 1;
                 }
                 *store = res;
@@ -548,7 +548,7 @@ int parse(struct Program *program){
             case 'L':
                 res = parse_line(source, &index);
                 if( ! res ){
-                    puts("Parse: failed in call to parse_line");
+                    puts("parse: failed in call to parse_line");
                     return 1;
                 }
                 *store = res;
@@ -559,7 +559,7 @@ int parse(struct Program *program){
             case 'E':
                 res = parse_expect(source, &index);
                 if( ! res ){
-                    puts("Parse: failed in call to parse_expect");
+                    puts("parse: failed in call to parse_expect");
                     return 1;
                 }
                 *store = res;
@@ -570,7 +570,7 @@ int parse(struct Program *program){
             case 'W':
                 res = parse_write(source, &index);
                 if( ! res ){
-                    puts("Parse: failed in call to parse_write");
+                    puts("parse: failed in call to parse_write");
                     return 1;
                 }
                 *store = res;
@@ -582,7 +582,7 @@ int parse(struct Program *program){
             case '\0': /* treat \0 as implicit quit */
                 res = parse_quit(source, &index);
                 if( ! res ){
-                    puts("Parse: failed in call to parse_quit");
+                    puts("parse: failed in call to parse_quit");
                     return 1;
                 }
                 *store = res;
@@ -592,7 +592,7 @@ int parse(struct Program *program){
 
             case '#':
                 if( parse_comment(source, &index) ){
-                    puts("Parsing comment failed");
+                    puts("parse: parsing comment failed");
                     return 1;
                 }
                 break;
@@ -608,7 +608,7 @@ int parse(struct Program *program){
                 break;
 
             default:
-                printf("Parse: Invalid character encountered '%c'\n", source[index]);
+                printf("parse: Invalid character encountered '%c'\n", source[index]);
                 return 1;
                 break;
         }
@@ -655,7 +655,7 @@ int eval_print(struct Program *p, struct Instruction *cur){
     /* 1 + num to fit num bytes and null */
     buf = get_buffer(p, 1+num);
     if( ! buf ){
-        puts("eval_prin: call to get_buffer failed");
+        puts("eval_print: call to get_buffer failed");
         return 1;
     }
 
@@ -666,7 +666,7 @@ int eval_print(struct Program *p, struct Instruction *cur){
 
     /* seek back to previous position */
     if( fseek(p->file, p->offset, SEEK_SET) ){
-        puts("Eval_expect: fseek failed");
+        puts("eval_print: fseek failed");
         return 1;
     }
 
@@ -694,7 +694,7 @@ int eval_byte(struct Program *p, struct Instruction *cur){
     byte = cur->argument.num;
 
     if( fseek(p->file, byte, SEEK_SET) ){
-        puts("Eval_byte: fseek failed");
+        puts("eval_byte: fseek failed");
         return 1;
     }
 
@@ -733,7 +733,7 @@ int eval_expect(struct Program *p, struct Instruction *cur){
 
     str = cur->argument.str;
     if( ! str ){
-        puts("Eval_expect: no string argument found");
+        puts("eval_expect: no string argument found");
         return 1;
     }
 
@@ -742,7 +742,7 @@ int eval_expect(struct Program *p, struct Instruction *cur){
     /*1 + len to fit len bytes + null terminator */
     buf = get_buffer(p, 1+len);
     if( ! buf ){
-        puts("Eval_expect: call to get_buffer failed");
+        puts("eval_expect: call to get_buffer failed");
         return 1;
     }
 
@@ -753,14 +753,14 @@ int eval_expect(struct Program *p, struct Instruction *cur){
 
     /* seek back to previous position */
     if( fseek(p->file, p->offset, SEEK_SET) ){
-        puts("Eval_expect: fseek failed");
+        puts("eval_expect: fseek failed");
         return 1;
     }
 
     /* compare number read to expected len */
     if( nr != len ){
         /* FIXME consider output when expect fails */
-        printf("Eval_expect: expected to read '%zu' bytes, actually read '%zu'\n", len, nr);
+        printf("eval_expect: expected to read '%zu' bytes, actually read '%zu'\n", len, nr);
         return 1;
     }
 
@@ -769,7 +769,7 @@ int eval_expect(struct Program *p, struct Instruction *cur){
         /* add terminating \0 to allow printf-ing */
         str[len] = '\0';
         /* FIXME consider output when expect fails */
-        printf("Eval_expect: expected string '%s', got '%s'\n", str, buf);
+        printf("eval_expect: expected string '%s', got '%s'\n", str, buf);
         return 1;
     }
 
@@ -798,7 +798,7 @@ int eval_write(struct Program *p, struct Instruction *cur){
 
     str = cur->argument.str;
     if( ! str ){
-        puts("Eval_write: no argument string found");
+        puts("eval_write: no argument string found");
         return 1;
     }
 
@@ -809,13 +809,13 @@ int eval_write(struct Program *p, struct Instruction *cur){
 
     /* check length */
     if( nw != len ){
-        printf("Eval_write: expected to write '%zu' bytes, actually wrote '%zu'\n", len, nw);
+        printf("eval_write: expected to write '%zu' bytes, actually wrote '%zu'\n", len, nw);
         return 1;
     }
 
     /* flush file */
     if( fflush(p->file) ){
-        puts("Eval_write: error flushing file");
+        puts("eval_write: error flushing file");
         return 1;
     }
 
@@ -833,7 +833,7 @@ int execute(struct Program *p){
     int ret = 0;
 
     if( !p ){
-        puts("Execute called with null program");
+        puts("execute: called with null program");
         return 1;
     }
 
@@ -881,7 +881,7 @@ int execute(struct Program *p){
                 break;
 
             default:
-                puts("Invalid command type encountered in execute");
+                puts("execute: invalid command type encountered in execute");
                 return 1;
                 break;
         }
