@@ -24,5 +24,5 @@ for infile in t/tests/*.in; do
     rm $testfile
 done
 
-echo "all tests completed"
+echo "exhaustive testing completed successfully"
 

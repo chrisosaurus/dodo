@@ -71,5 +71,7 @@ test: debug
 	@./t/basic.sh
 	@echo Running more exhaustive t/exhaustive.sh
 	@./t/exhaustive.sh
+	@echo ""
+	@echo "all tests passed"
 
 .PHONY: all options clean dist install uninstall test debug
