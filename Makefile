@@ -29,6 +29,10 @@ dodo: ${OBJ}
 clean:
 	@echo cleaning
 	@rm -f dodo ${OBJ} dodo-${VERSION}.tar.gz
+	@echo removing gcov files
+	@find . -iname '*.gcda' -delete
+	@find . -iname '*.gcov' -delete
+	@find . -iname '*.gcno' -delete
 
 dist: clean
 	@echo creating dist tarball 'dodo-${VERSION}.tar.gz'
