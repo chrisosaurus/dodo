@@ -818,7 +818,7 @@ int eval_write(struct Program *p, struct Instruction *cur){
 
     /* seek to end of write */
     if( fseek(p->file, p->offset, SEEK_SET) ){
-        puts("eval_byte: fseek failed");
+        puts("eval_write: fseek failed");
         return 1;
     }
 
