@@ -1,7 +1,9 @@
+#include <unistd.h> /* truncate */
 #include <stdio.h> /* fopen, fseek, fread, fwrite, FILE */
 #include <stdlib.h> /* exit */
 #include <string.h> /* strcmp, strncmp */
 #include <ctype.h> /* isdigit */
+
 
 /***** data structures and manipulation *****/
 
@@ -29,6 +31,9 @@ enum Command {
      * leaves the cursor positioned after the write
      */
     WRITE,
+    /* truncates file at cursor position
+     */
+    TRUNCATE,
     /* exits with code EXIT_SUCCESS
      */
     QUIT
@@ -54,6 +59,8 @@ struct Instruction {
 struct Program {
     /* linked list of Instruction(s) */
     struct Instruction *start;
+    /* path to file program is operating on */
+    char* path;
     /* file program is operating on */
     FILE *file;
     /* current offset into file */
@@ -204,8 +211,7 @@ struct Instruction * parse_string(struct Instruction *i, char *source, size_t *i
                 memmove(source+*index,
                         source+*index+1,
                         strlen(source+*index));
-                (*index)++;
-                len+=2;
+                len++;
                 break;
 
             /* terminating delimiter */
@@ -318,7 +324,7 @@ struct Instruction * parse_print(char *source, size_t *index){
      */
     if( isdigit(source[*index]) ){
         ret = parse_number(i, source, index);
-        if (ret == 0)
+        if(ret == 0)
             free(i);
         return ret;
     }
@@ -351,7 +357,7 @@ struct Instruction * parse_byte(char *source, size_t *index){
     }
 
     ret = parse_number(i, source, index);
-    if (ret == 0)
+    if(ret == 0)
         free(i);
 
     return ret;
@@ -397,7 +403,7 @@ struct Instruction * parse_expect(char *source, size_t *index){
     }
 
     ret = parse_string(i, source, index);
-    if (ret == 0)
+    if(ret == 0)
         free(i);
 
     return ret;
@@ -427,10 +433,35 @@ struct Instruction * parse_write(char *source, size_t *index){
             break;
     }
     ret = parse_string(i, source, index);
-    if (ret == 0)
+    if(ret == 0)
         free(i);
 
     return ret;
+}
+
+struct Instruction * parse_truncate(char *source, size_t *index){
+    struct Instruction *i = 0;
+
+    switch( source[*index] ){
+        case 't':
+        case 'T':
+            /* advance past letter */
+            ++(*index);
+            break;
+
+        default:
+            printf("Parse_truncate: unexpected character '%c', expected 't'\n", source[*index]);
+            return 0;
+    }
+
+
+    i = new_instruction(TRUNCATE);
+    if( ! i ){
+        puts("Parse_truncate: call to new_instruction failed");
+        return 0;
+    }
+
+    return i;
 }
 
 struct Instruction * parse_quit(char *source, size_t *index){
@@ -501,8 +532,6 @@ EXIT:
 int parse(struct Program *program){
     /* index into source */
     size_t index = 0;
-    /* length of source */
-    size_t len = 0;
     /* result from call to parse_ functions */
     struct Instruction *res = 0;
     /* place to store next parsed Instruction */
@@ -517,10 +546,9 @@ int parse(struct Program *program){
 
     source = program->source;
 
-    len = strlen(source);
     store = &(program->start);
 
-    while( index < len ){
+    while( source[index] ){
         switch( source[index] ){
             case 'p':
             case 'P':
@@ -577,9 +605,19 @@ int parse(struct Program *program){
                 store = &(res->next);
                 break;
 
+            case 't':
+            case 'T':
+                res = parse_truncate(source, &index);
+                if( ! res ){
+                    puts("Parse: failed in call to parse_truncate");
+                    return 1;
+                }
+                *store = res;
+                store = &(res->next);
+                break;
+
             case 'q':
             case 'Q':
-            case '\0': /* treat \0 as implicit quit */
                 res = parse_quit(source, &index);
                 if( ! res ){
                     puts("parse: failed in call to parse_quit");
@@ -619,7 +657,7 @@ EXIT:
     /* null terminator for program */
     *store = 0;
 
-    return 0;
+    return 0;   
 }
 
 
@@ -831,6 +869,20 @@ int eval_write(struct Program *p, struct Instruction *cur){
     return 0;
 }
 
+/* eval TRUNCATE command
+ * truncate file at cursor position
+ * returns 0 on success
+ * returns 1 on failure
+ * failure will cause program to halt
+ */
+int eval_truncate(struct Program *p, struct Instruction *cur){
+    if( truncate(p->path, p->offset) == -1 ){
+        perror("eval_truncate: error in call to truncate");
+        return 1;
+    }
+    return 0;
+}
+
 /* execute provided Program
  * return 0 on success
  * return 1 on failure
@@ -884,9 +936,16 @@ int execute(struct Program *p){
                 }
                 break;
 
+            case TRUNCATE:
+                ret = eval_truncate(p, cur);
+                if( ret ){
+                    return ret;
+                }
+                break;
+
             case QUIT:
-                /* escape from loop */
-                goto EXIT;
+                /* explicit quit, return -1 */
+                return -1;
                 break;
 
             default:
@@ -896,9 +955,7 @@ int execute(struct Program *p){
         }
     }
 
-    /* implicit (EOF) or explicit (Command quit) => exit */
-EXIT:
-
+    /* implicit (EOF) quit => exit quietly */
     return 0;
 }
 
@@ -910,7 +967,7 @@ void scrub(struct Program *p)
 {
     struct Instruction *now = 0;
     struct Instruction *next = 0;
-    if ( p->start ){
+    if( p->start ){
         now = p->start;
         do {
             next = now->next;
@@ -930,8 +987,8 @@ int repl(struct Program *p){
         printf("dodo: ");
         p->source = fgets(line, sizeof(line), stdin);
 
-        if ( ! p->source ){
-            if ( feof(stdin) ){
+        if( ! p->source ){
+            if( feof(stdin) ){
                 exit_code = EXIT_SUCCESS;
             } else {
                 printf("fgets failed in repl\n");
@@ -942,8 +999,13 @@ int repl(struct Program *p){
 
         /* note we don't error-out on parse or execute,
          * keep the repl rolling */
-        parse(p);
-        execute(p);
+        if( parse(p) ){
+            printf("Parsing program failed in repl\n");
+        } else {
+            if( execute(p) == -1 ){
+                goto EXIT;
+            }
+        }
 
         scrub(p);
     }
@@ -984,7 +1046,6 @@ void usage(void){
 
 int main(int argc, char **argv){
     int exit_code = EXIT_SUCCESS;
-    int do_repl = 0;
     struct Program p = {0};
 
     if(    argc < 2
@@ -997,14 +1058,16 @@ int main(int argc, char **argv){
     }
 
     /* catch 'interactive' command line argument */
-    if (    argc == 3
-         && (!strcmp("--interactive", argv[1])
-         || !strcmp("-i", argv[1]))){
-        do_repl = 1;
+    if(    argc == 3
+        && strcmp("--interactive", argv[1])
+        && strcmp("-i", argv[1])
+    ){
+        usage();
+        exit(EXIT_FAILURE);
     }
 
     /* one-shot read and execute if we're not heading into the repl */
-    if ( ! do_repl )
+    if( argc == 2 )
     {
         /* read program into source */
         p.source = slurp(stdin);
@@ -1023,19 +1086,20 @@ int main(int argc, char **argv){
     }
 
     /* open file */
-    p.file = fopen(argv[1 + do_repl], "r+b");
+    p.path = argv[argc - 1];
+    p.file = fopen(p.path, "r+b");
     if( ! p.file ){
-        printf("Failed to open specified file '%s'\n", argv[1 + do_repl]);
+        printf("Failed to open specified file '%s'\n", argv[argc - 1]);
         exit_code = EXIT_FAILURE;
         goto EXIT;
     }
 
-    if ( do_repl ) {
+    if( argc == 3 ) {
         /* execute the repl */
         repl(&p);
     } else {
         /* execute program */
-        if( execute(&p) ){
+        if( execute(&p) > 0 ){
             puts("Program execution failed");
             exit_code = EXIT_FAILURE;
             goto EXIT;
