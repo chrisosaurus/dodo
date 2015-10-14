@@ -10,3 +10,5 @@ dodo_coveralls.sh
 *.gcno
 *.gcda
 
+*.tmp
+

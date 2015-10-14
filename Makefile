@@ -63,7 +63,9 @@ debug:
 	@${CC} -o dodo ${DEBUG_LDFLAGS} ${OBJ}
 
 test: debug
-	@echo Running test.sh
-	@./test.sh
+	@echo Running t/basic.sh
+	@./t/basic.sh
+	@echo Running more exhaustive t/exhaustive.sh
+	@./t/exhaustive.sh
 
 .PHONY: all options clean dist install uninstall test debug
