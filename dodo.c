@@ -813,6 +813,15 @@ int eval_write(struct Program *p, struct Instruction *cur){
         return 1;
     }
 
+    /* update file offset to be at end of write */
+    p->offset += nw;
+
+    /* seek to end of write */
+    if( fseek(p->file, p->offset, SEEK_SET) ){
+        puts("eval_byte: fseek failed");
+        return 1;
+    }
+
     /* flush file */
     if( fflush(p->file) ){
         puts("eval_write: error flushing file");
