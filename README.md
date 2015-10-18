@@ -50,7 +50,7 @@ example dodo usage:
         b6         # goto byte 6 in file
         e/world/   # expect string 'world'
         w/marge/   # write string 'marge' (writes over 'world')
-        b38
+        b38        # goto byte 38 in file
         e/sl\/ash/ # expect string 'sl/ash'
         w/slashy/  # write over string 'sl/ash' with 'slashy'
         q          # quit
@@ -97,8 +97,6 @@ write moves the cursor by the number of bytes written
 
 
 **truncate:**
-.br
-t
 
 truncate the file at the current cursor position.
 Note that since the cursor can be inside or outside of the file, this can be used to truncate or extend files.
