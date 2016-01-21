@@ -984,7 +984,7 @@ int repl(struct Program *p){
 
     /* FIXME: doesn't handle quit command */
     while( 1 ){
-        printf("dodo: ");
+        printf("dodo [%d]: ", p->offset);
         p->source = fgets(line, sizeof(line), stdin);
 
         if( ! p->source ){
