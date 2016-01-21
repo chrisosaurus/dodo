@@ -364,6 +364,7 @@ struct Instruction * parse_byte(char *source, size_t *index){
 }
 
 struct Instruction * parse_line(char *source, size_t *index){
+    struct Instruction *ret = 0;
     struct Instruction *i = 0;
 
     i = new_instruction(LINE);
@@ -372,10 +373,30 @@ struct Instruction * parse_line(char *source, size_t *index){
         return 0;
     }
 
-    free(i);
+    /* ln where n is positive integer */
+    switch( source[*index] ){
+        case 'l':
+        case 'L':
+            ++(*index);
+            break;
+        default:
+            printf("parse_line: unexpected character '%c', expected 'l'\n", source[*index]);
+            free(i);
+            return 0;
+            break;
+    }
 
-    puts("parse_line unimplemented");
-    return 0; /* FIXME unimplemented */
+    ret = parse_number(i, source, index);
+
+    if( i->argument.num == 0 ){
+        puts("parse_line: line number must be > 0\n");
+        ret = 0;
+    }
+
+    if(ret == 0)
+        free(i);
+
+    return ret;
 }
 
 struct Instruction * parse_expect(char *source, size_t *index){
@@ -743,8 +764,40 @@ int eval_byte(struct Program *p, struct Instruction *cur){
 }
 
 int eval_line(struct Program *p, struct Instruction *cur){
-    puts("eval_line unimplemented");
-    return 1; /* FIXME unimplemented */
+    char buffer[1024];
+    int observed = 0;
+    int i = 0;
+    size_t read = 0;
+
+    /* first things first; seek to start of file */
+    if( fseek(p->file, 0, SEEK_SET) ){
+        puts("eval_line: fseek failed");
+        return 1;
+    }
+    p->offset = 0;
+
+    /* nothing more to be done if line 1 was requested */
+    if( cur->argument.num == 1 ){
+        return 0;
+    }
+
+    while( (read = fread(buffer, 1, sizeof(buffer), p->file)) ){
+        for( i = 0; i < read; i++ ){
+            if( buffer[i] == '\n' && ++observed >= cur->argument.num - 1 ){
+                /* +1 to skip over \n */
+                p->offset += i + 1;
+                if( fseek(p->file, p->offset, SEEK_SET) ){
+                    puts("eval_line: fseek failed");
+                    return 1;
+                }
+                return 0;
+            }
+        }
+        p->offset += read;
+    }
+
+    printf("eval_line: read error before reaching line %d\n", cur->argument.num);
+    return 1;
 }
 
 /* eval EXPECT command
