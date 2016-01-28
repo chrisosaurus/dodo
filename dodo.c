@@ -772,7 +772,7 @@ int eval_line(struct Program *p, struct Instruction *cur){
     char buffer[1024];
     int observed = 0;
     int i = 0;
-    size_t read = 0;
+    size_t nread = 0;
 
     /* first things first; seek to start of file */
     if( fseek(p->file, 0, SEEK_SET) ){
@@ -786,8 +786,8 @@ int eval_line(struct Program *p, struct Instruction *cur){
         return 0;
     }
 
-    while( (read = fread(buffer, 1, sizeof(buffer), p->file)) ){
-        for( i = 0; i < read; i++ ){
+    while( (nread = fread(buffer, 1, sizeof(buffer), p->file)) ){
+        for( i = 0; i < nread; i++ ){
             if( buffer[i] == '\n' && ++observed >= cur->argument.num - 1 ){
                 /* +1 to skip over \n */
                 p->offset += i + 1;
@@ -798,7 +798,7 @@ int eval_line(struct Program *p, struct Instruction *cur){
                 return 0;
             }
         }
-        p->offset += read;
+        p->offset += nread;
     }
 
     printf("eval_line: read error before reaching line %d\n", cur->argument.num);
