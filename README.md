@@ -71,6 +71,14 @@ dodo currently supports the following commands and syntax:
 
 print specified number of bytes, if number is not specified will default to 100
 
+**line**:
+
+	lnumber
+
+place cursor at the start of 'number'-th line.
+Warning: this may be expensive in large files
+
+
 **expect:**
 
     e/string/
