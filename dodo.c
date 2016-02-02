@@ -1092,7 +1092,7 @@ void usage(void){
          "\n"
          "supported commands:\n"
          "  bn        # goto byte <n> of file\n"
-         "  ln        # goto line <n> of file -- UNIMPLEMENTED\n"
+         "  ln        # goto line <n> of file\n"
          "  p         # print 100 bytes\n"
          "  pn        # print n bytes\n"
          "  e/str/    # compare <str> to current position, exit if not equal\n"
