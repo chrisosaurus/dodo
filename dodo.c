@@ -263,7 +263,6 @@ struct Instruction * parse_number(struct Instruction *i, char *source, size_t *i
     /* read in number */
     if( ! sscanf(&(source[*index]), "%d", &(i->argument.num)) ){
         puts("parse_number: failed to read in number");
-        free(i);
         return 0;
     }
 
