@@ -12,8 +12,17 @@ e/how are you doing today?/
 b0
 e/hello there world/
 
-b19
+b+19
 e/ow are/
+
+b-0
+e/ow are/
+
+b-1
+e/how are/
+
+b-7
+e/ world/
 
 b43
 e/I am doing well, thank/

@@ -39,11 +39,23 @@ enum Command {
     QUIT
 };
 
+/* interpretation of numbers depends on mode
+ *  +5 is relative 5 units (byte or line) forward
+ *  -3 is relative 3 units (byte or line) backwards
+ *  2 is absolute 2 unite (byte or line) from start of file
+ */
+enum Mode {
+  RELATIVE_FORWARD,
+  RELATIVE_BACKWARD,
+  ABSOLUTE
+};
+
 /* interpretation depends on Command */
 struct Argument {
     /* either numeric argument OR length of string */
     int num;
     char *str;
+    enum Mode mode;
 };
 
 struct Instruction {
@@ -259,6 +271,24 @@ struct Instruction * parse_number(struct Instruction *i, char *source, size_t *i
         return 0;
     }
 
+    /* check for leading '+' or '-' which indicate relative
+     * and if found, skip past them
+     */
+    switch( source[*index] ){
+      case '+':
+        i->argument.mode = RELATIVE_FORWARD;
+        ++(*index);
+        break;
+
+      case '-':
+        i->argument.mode = RELATIVE_BACKWARD;
+        ++(*index);
+        break;
+
+      default:
+        i->argument.mode = ABSOLUTE;
+        break;
+    }
 
     /* read in number */
     if( ! sscanf(&(source[*index]), "%d", &(i->argument.num)) ){
@@ -748,50 +778,99 @@ int eval_print(struct Program *p, struct Instruction *cur){
 int eval_byte(struct Program *p, struct Instruction *cur){
     /* byte number argument to seek to */
     int byte = 0;
+    /* whence argument to fseek
+     * if absolute then SEEK_SET
+     * if relative then SEEK_CUR
+     */
+    int whence = 0;
 
     byte = cur->argument.num;
 
-    if( fseek(p->file, byte, SEEK_SET) ){
+    switch( cur->argument.mode ){
+      case ABSOLUTE:
+        whence = SEEK_SET;
+        /* update file offset */
+        p->offset = byte;
+        break;
+
+      case RELATIVE_FORWARD:
+        whence = SEEK_CUR;
+        /* update file offset */
+        p->offset += byte;
+        break;
+
+      case RELATIVE_BACKWARD:
+        whence = SEEK_CUR;
+        /* update file offset */
+        p->offset -= byte;
+        /* make byte negative */
+        /* FIXME should we report when seek is silly
+         * e.g. seek backward or forwards beyond file limits
+         */
+        byte = -byte;
+        break;
+
+      default:
+        puts("eval_byte: impossible mode specified");
+        return 1;
+        break;
+    }
+
+    if( fseek(p->file, byte, whence) ){
         puts("eval_byte: fseek failed");
         return 1;
     }
-
-    /* update file offset */
-    p->offset = byte;
 
     return 0;
 }
 
 int eval_line(struct Program *p, struct Instruction *cur){
     char buffer[1024];
+    /* count of newlines observed */
     int observed = 0;
     int i = 0;
     size_t nread = 0;
 
-    /* first things first; seek to start of file */
-    if( fseek(p->file, 0, SEEK_SET) ){
-        puts("eval_line: fseek failed");
-        return 1;
+    /* first things first;
+     * if we are in absolute mode then
+     * seek to start of file */
+    if( cur->argument.mode == ABSOLUTE ){
+        if( fseek(p->file, 0, SEEK_SET) ){
+            puts("eval_line: fseek failed");
+            return 1;
+        }
+        p->offset = 0;
     }
-    p->offset = 0;
 
     /* if we are asked to goto line 0 (rel or abs) then we are already done */
     if( cur->argument.num == 0 ){
         return 0;
     }
 
+    /* backwards relative NOT yet supported by eval_line */
+    if( cur->argument.mode == RELATIVE_BACKWARD ){
+        puts("eval_line: RELATIVE_BACKWARD not yet supported");
+        return 1;
+    }
+
+    /* read in file in sizeof(buffer) chunks */
     while( (nread = fread(buffer, 1, sizeof(buffer), p->file)) ){
+        /* step through bytes read */
         for( i = 0; i < nread; i++ ){
+            /* check for found newline character ('\n') */
             if( buffer[i] == '\n' ){
+                /* count this newline */
                 ++observed;
+                /* if we have seen all the newlines we need, finish up */
                 if( observed >= cur->argument.num  ){
-                  /* +1 to skip over \n */
-                  p->offset += i + 1;
-                  if( fseek(p->file, p->offset, SEEK_SET) ){
-                      puts("eval_line: fseek failed");
-                      return 1;
-                  }
-                  return 0;
+                    /* +1 to skip over \n */
+                    p->offset += i + 1;
+                    /* seek to position after newline in file */
+                    if( fseek(p->file, p->offset, SEEK_SET) ){
+                        puts("eval_line: fseek failed");
+                        return 1;
+                    }
+                    return 0;
                 }
             }
         }
