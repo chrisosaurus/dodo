@@ -389,11 +389,6 @@ struct Instruction * parse_line(char *source, size_t *index){
 
     ret = parse_number(i, source, index);
 
-    if( i->argument.num == 0 ){
-        puts("parse_line: line number must be > 0\n");
-        ret = 0;
-    }
-
     if( ret == 0 ){
         free(i);
     }
@@ -682,7 +677,7 @@ EXIT:
     /* null terminator for program */
     *store = 0;
 
-    return 0;   
+    return 0;
 }
 
 
@@ -780,21 +775,24 @@ int eval_line(struct Program *p, struct Instruction *cur){
     }
     p->offset = 0;
 
-    /* nothing more to be done if line 1 was requested */
-    if( cur->argument.num == 1 ){
+    /* if we are asked to goto line 0 (rel or abs) then we are already done */
+    if( cur->argument.num == 0 ){
         return 0;
     }
 
     while( (nread = fread(buffer, 1, sizeof(buffer), p->file)) ){
         for( i = 0; i < nread; i++ ){
-            if( buffer[i] == '\n' && ++observed >= cur->argument.num - 1 ){
-                /* +1 to skip over \n */
-                p->offset += i + 1;
-                if( fseek(p->file, p->offset, SEEK_SET) ){
-                    puts("eval_line: fseek failed");
-                    return 1;
+            if( buffer[i] == '\n' ){
+                ++observed;
+                if( observed >= cur->argument.num  ){
+                  /* +1 to skip over \n */
+                  p->offset += i + 1;
+                  if( fseek(p->file, p->offset, SEEK_SET) ){
+                      puts("eval_line: fseek failed");
+                      return 1;
+                  }
+                  return 0;
                 }
-                return 0;
             }
         }
         p->offset += nread;

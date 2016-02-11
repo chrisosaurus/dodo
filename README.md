@@ -75,7 +75,7 @@ print specified number of bytes, if number is not specified will default to 100
 
 	lnumber
 
-place cursor at the start of 'number'-th line.
+place cursor at the start of line 'number', lines are 0-based
 Warning: this may be expensive in large files
 
 
@@ -92,7 +92,7 @@ expect does not move the cursor.
 
     bnumber
 
-move cursor to absolute byte 'number' within file
+move cursor to absolute byte 'number' within file, bytes are 0-based
 
 
 **write:**
