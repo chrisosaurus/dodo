@@ -1039,7 +1039,6 @@ int repl(struct Program *p){
     int exit_code = EXIT_FAILURE;
     char line[4096]; /* FIXME: Perhaps use slurp-like behaviour instead */
 
-    /* FIXME: doesn't handle quit command */
     while( 1 ){
         printf("dodo [%d]: ", p->offset);
         p->source = fgets(line, sizeof(line), stdin);
