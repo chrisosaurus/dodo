@@ -263,7 +263,6 @@ struct Instruction * parse_number(struct Instruction *i, char *source, size_t *i
     /* read in number */
     if( ! sscanf(&(source[*index]), "%d", &(i->argument.num)) ){
         puts("parse_number: failed to read in number");
-        free(i);
         return 0;
     }
 
@@ -1040,7 +1039,6 @@ int repl(struct Program *p){
     int exit_code = EXIT_FAILURE;
     char line[4096]; /* FIXME: Perhaps use slurp-like behaviour instead */
 
-    /* FIXME: doesn't handle quit command */
     while( 1 ){
         printf("dodo [%d]: ", p->offset);
         p->source = fgets(line, sizeof(line), stdin);
@@ -1092,7 +1090,7 @@ void usage(void){
          "\n"
          "supported commands:\n"
          "  bn        # goto byte <n> of file\n"
-         "  ln        # goto line <n> of file -- UNIMPLEMENTED\n"
+         "  ln        # goto line <n> of file\n"
          "  p         # print 100 bytes\n"
          "  pn        # print n bytes\n"
          "  e/str/    # compare <str> to current position, exit if not equal\n"
