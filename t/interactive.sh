@@ -20,12 +20,16 @@ for infile in t/tests/interactive/*.in; do
         exit 1
     fi
 
+    echo "\texited successfully"
+
     diff $testfile "$base.out"
     ret=$?
     if [ $ret -ne 0 ]; then
         echo "output was not expected: test failed for $base"
         exit 1
     fi
+
+    echo "\toutput file matched expectations"
 
     expstdout="$base.stdout"
     if [ -e "$expstdout" ]; then
@@ -35,11 +39,13 @@ for infile in t/tests/interactive/*.in; do
             echo "stdout was not expected: test failed for $base"
             exit 1
         fi
+
+        echo "\tstdout matched expectations"
     fi
 
     rm $testfile
     rm $teststdout
 done
 
-echo "interactive testing completed successfully"
+echo "exhaustive testing completed successfully"
 
