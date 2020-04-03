@@ -1,6 +1,6 @@
 #!/usr/bin/env sh
 
-for infile in t/tests/*.in; do
+for infile in t/tests/exhaustive/*.in; do
     base=`echo $infile | sed 's/\.in$//g'`
     testfile="$base.tmp"
 
