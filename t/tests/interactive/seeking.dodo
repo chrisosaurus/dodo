@@ -1,0 +1,10 @@
+# seek to a small number
+b10
+
+# seek to 32 bit int_max
+b2147483647
+
+# seek past 32 bit int_max
+b4000000000
+
+q

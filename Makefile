@@ -71,6 +71,8 @@ test: debug
 	@./t/basic.sh
 	@echo Running more exhaustive t/exhaustive.sh
 	@./t/exhaustive.sh
+	@echo Running interactive t/interactive.sh
+	@./t/interactive.sh
 	@echo ""
 	@echo "all tests passed"
 
