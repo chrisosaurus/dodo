@@ -42,7 +42,7 @@ enum Command {
 /* interpretation depends on Command */
 struct Argument {
     /* either numeric argument OR length of string */
-    int num;
+    long int num;
     char *str;
 };
 
@@ -64,7 +64,7 @@ struct Program {
     /* file program is operating on */
     FILE *file;
     /* current offset into file */
-    int offset;
+    long int offset;
     /* program source read into a buffer */
     char *source;
     /* shared buffer (and length) used for reading into */
@@ -243,6 +243,8 @@ EXIT:
  * 0 on error
  */
 struct Instruction * parse_number(struct Instruction *i, char *source, size_t *index){
+    char *endptr = 0;
+
     /* check arguments */
     if( ! i ){
         puts("parse_number: null instruction");
@@ -258,15 +260,29 @@ struct Instruction * parse_number(struct Instruction *i, char *source, size_t *i
         puts("parse_number: null index");
         return 0;
     }
+    /* read in number
+     * `0` as base for `automatic` base selection
+     */
+    i->argument.num = strtol(&(source[*index]), &endptr, 0);
 
-
-    /* read in number */
-    if( ! sscanf(&(source[*index]), "%d", &(i->argument.num)) ){
-        puts("parse_number: failed to read in number");
-        return 0;
+    /* advance past number ourselves to check strtol consumed whole number
+     *
+     * strtol supports
+     *  <decimal number>
+     *  0<octal number>
+     *  0x<hexadecimal number>
+     *
+     * first skip past any leading 0 or 0x
+     * then find where we think the number should end
+     * finally compare that to where strtol stopped.
+     */
+    if( source[*index] == '0' ){
+        ++(*index);
+        if( source[*index] == 'x' ){
+            ++(*index);
+        }
     }
 
-    /* advance past number */
     for( ; ; ++(*index) ){
         switch( source[*index] ){
             case '0':
@@ -285,6 +301,11 @@ struct Instruction * parse_number(struct Instruction *i, char *source, size_t *i
                 goto EXIT;
                 break;
         }
+    }
+
+    if( endptr != &(source[*index]) ){
+        puts("parse_number: error when reading in number");
+        return 0;
     }
 
 EXIT:
@@ -705,7 +726,7 @@ EXIT:
  */
 int eval_print(struct Program *p, struct Instruction *cur){
     /* number of bytes to read */
-    int num = cur->argument.num;
+    long int num = cur->argument.num;
     char *buf = 0;
     /* number of bytes read */
     size_t nr = 0;
@@ -752,7 +773,7 @@ int eval_print(struct Program *p, struct Instruction *cur){
  */
 int eval_byte(struct Program *p, struct Instruction *cur){
     /* byte number argument to seek to */
-    int byte = 0;
+    long int byte = 0;
 
     byte = cur->argument.num;
 
@@ -800,7 +821,7 @@ int eval_line(struct Program *p, struct Instruction *cur){
         p->offset += nread;
     }
 
-    printf("eval_line: read error before reaching line %d\n", cur->argument.num);
+    printf("eval_line: read error before reaching line %ld\n", cur->argument.num);
     return 1;
 }
 
@@ -1040,7 +1061,7 @@ int repl(struct Program *p){
     char line[4096]; /* FIXME: Perhaps use slurp-like behaviour instead */
 
     while( 1 ){
-        printf("dodo [%d]: ", p->offset);
+        printf("dodo [%ld]: ", p->offset);
         p->source = fgets(line, sizeof(line), stdin);
 
         if( ! p->source ){
