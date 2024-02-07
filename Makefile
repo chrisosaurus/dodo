@@ -7,6 +7,7 @@ include config.mk
 
 SRC = dodo.c
 OBJ = ${SRC:.c=.o}
+ASAN = -fsanitize=address,undefined -fno-omit-frame-pointer
 
 all: options dodo
 
@@ -18,13 +19,13 @@ options:
 
 .c.o:
 	@echo CC $<
-	@${CC} -g -c ${CFLAGS} $<
+	@${CC} -g -c ${CFLAGS} ${ASAN} $<
 
 ${OBJ}: config.mk
 
 dodo: ${OBJ}
 	@echo CC -o $@
-	@${CC} -o $@ ${LDFLAGS} ${OBJ}
+	@${CC} -o $@ ${LDFLAGS} ${ASAN} ${OBJ}
 
 clean:
 	@echo cleaning
