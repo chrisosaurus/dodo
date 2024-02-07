@@ -303,12 +303,12 @@ struct Instruction * parse_number(struct Instruction *i, char *source, size_t *i
         }
     }
 
+EXIT:
+
     if( endptr != &(source[*index]) ){
         puts("parse_number: error when reading in number");
         return 0;
     }
-
-EXIT:
 
     return i;
 }
@@ -703,7 +703,7 @@ EXIT:
     /* null terminator for program */
     *store = 0;
 
-    return 0;   
+    return 0;
 }
 
 
