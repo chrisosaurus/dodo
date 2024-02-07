@@ -60,7 +60,7 @@ struct Program {
     /* linked list of Instruction(s) */
     struct Instruction *start;
     /* path to file program is operating on */
-    char* path;
+    char *path;
     /* file program is operating on */
     FILE *file;
     /* current offset into file */
@@ -72,7 +72,7 @@ struct Program {
     size_t buf_len;
 };
 
-struct Instruction *new_instruction(enum Command command){
+struct Instruction * new_instruction(enum Command command){
     struct Instruction *i = 0;
 
     i = calloc(1, sizeof(struct Instruction));
@@ -90,7 +90,7 @@ struct Instruction *new_instruction(enum Command command){
 /* return a buffer of at least size required_len
  * returns 0 on error
  */
-char *get_buffer(struct Program *p, size_t required_len){
+char * get_buffer(struct Program *p, size_t required_len){
     if( ! p ){
         return 0;
     }
